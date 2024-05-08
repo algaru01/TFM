@@ -20,7 +20,7 @@ You can test the images now.
 
 Start the containers:
 ```console
-make start
+make run
 ```
 
 And attach to the containers where `xx` is either `hn=head_node` or `cn=compute_node`.:
