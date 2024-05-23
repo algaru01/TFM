@@ -1,15 +1,30 @@
 # Jupyter IPython cluster in Docker
 
-Multi-container IPython Cluster builded with Docker.
+Multi-container IPython Cluster in Kubernetes.
 
-## Containers
-This will create two types of containers:
-* *Frontend Node*. Node running the *ipcontroller* that manages works.
-* *Worker Node*. Several nodes running the *ipengine* that executes works.
+## Architecture
 
-## Building Images
+### Pods
+This will create two types of pods:
+* *Frontend Node*. Node running the *ipcontroller* that manages works. Created with a *pod*.
+* *Worker Node*. Several nodes running the *ipengine* that executes works. Created with a *deployment*
+
+### Service
+*Frontend* will be behind a *Service*, this way *Workers* will have a static domain name to access it. This is needed mainly for configuration in `ipcontroller-engine.json`.
+
+### Configmap
+Two *Configmaps* are needed for configuration in `ipcontroller-engine.json`. They are mainly the same, the main difference is the domain name which will resolve to the *Frontend* IP. As we mentioned, *Workers* use a Service and *Frontend* uses its hostname.
+
+
+
+## Docker Images
+### Explanation
+At first, we create a base image for both types of containers that will contain everything that is equally needed for *Frontend* and *Workers*. These are some tools like python, creation of the Jupyter user, or directories needed for configuration.
+
+Lastly, starting from this base image, we specify each node in its particular Dockerfile.
+
+### Build, test and push
 A Makefile has been made to make it easier to build and test images.
-
 
 Build the images locally:
 ```console
@@ -28,40 +43,50 @@ And attach to the containers where `xx` is either `fn=frontend_node` or `wn=work
 make attach_xx
 ```
 
-## Starting the Cluster
+Lastly, you can push the images to your docker repository:
 
-Start the cluster by using `docker-compose`:
+```
+make push
+```
+
+### Docker compose
+You can also used the prepared `docker-compose.yaml` to test everything.
+
+Start the cluster:
 ```console
 docker-compose up
 ```
-
-### Accessing to the Cluster
 
 Access each node in the Cluster with:
 ```console
 docker exec -it <node> bash
 ```
 
-## Getting Started
-For now, we must do some configuration manually.
+### Getting Started
+In case you are only testing the docker images either by using the Makefile or with the `docker-compose.yaml`, you have to do some configuration manually.
 
-### Frontend
+#### Frontend
+
+Check if `ipcontroller` has been launched correctly.
+
+In case it did not, launch it manually by getting the IP and executing.
 Get the IP.
 ```
 ip -f inet -br addr show dev eth0
 ```
 
-Execute the *controller*.
 ```
 nohup ipcontroller --ip=x.x.x.x &
 ```
 
-Copy the genersted file to your host machine.
+Finally, copy the generated file to your host machine.
 ```
 docker cp <container_name>:/root/.ipython/profile_default/security/ipcontroller-engine.json ipcontroller-engine.json
 ```
 
-### Workers
+#### Workers
+Here, `ipcontroller` most likely failed, as *Workers* do not have the `ipcontroller-engine.json` file. So launch it manually.
+
 Create needed directories.
 ```
 docker exec -it <name_container> mkdir -p /root/.ipython/profile_default/security/
@@ -78,8 +103,20 @@ docker exec -it <container_name> bash
 	$ nohup ipengine --file=/root/.ipython/profile_default/security/ipcontroller-engine.json &
 ```
 
+## Launch Cluster in Kubernetes
+To launch the cluster in Kubernetes, apply the following YAMLs in this order.
+```
+kubectl apply -f configmap-fn.yaml
+kubectl apply -f configmap-wn.yaml
+kubectl apply -f service.yaml
+kubectl apply -f frontend.yaml
+kubectl apply -f deployment.yaml
+```
+
+Once everything is up, it should be ready to use. Except frontend's Notebook is still not available from the host.
+
 ## Test
-Once everyhting is setted up, you can test it by running `python` in the *frontend node*.
+Once everyhting is setted up, you can test it by running `python3` in the *frontend node*.
 This is an example for 2 *worker nodes*.
 ```
 jupyter@linux0:~$ python3

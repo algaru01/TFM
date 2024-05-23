@@ -53,3 +53,10 @@ remove:
         docker stop $(WN_CONT_NAME)$$i || true; \
 		docker rm 	${WN_CONT_NAME}$$1 || true; \
     done
+
+push:
+	docker tag 	${FRONTEND_IMG}:${FRONTEND_IMG-TAG}  agalrui/${FRONTEND_IMG}:${FRONTEND_IMG-TAG}
+	docker push agalrui/${FRONTEND_IMG}:${FRONTEND_IMG-TAG}
+
+	docker tag 	${WORKER_IMG}:${WORKER_IMG-TAG}  agalrui/${WORKER_IMG}:${WORKER_IMG-TAG}
+	docker push agalrui/${WORKER_IMG}:${WORKER_IMG-TAG}

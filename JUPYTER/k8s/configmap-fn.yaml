@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ipythonconf-fn
+data:
+  ipcontroller-engine.json: |
+    {
+      "ssh": "",
+      "interface": "tcp://frontend",
+      "registration": 58173,
+      "control": 36827,
+      "mux": 51387,
+      "task": 33439,
+      "iopub": 33613,
+      "hb_ping": 34595,
+      "hb_pong": 56171,
+      "broadcast": [
+        59031,
+        56287
+      ],
+      "key": "9f8d6a2f-34485b850956c550ef9c68e7",
+      "curve_serverkey": null,
+      "location": "frontend",
+      "pack": "json",
+      "unpack": "json",
+      "signature_scheme": "hmac-sha256"
+    }
+
+  ipcontroller-client.json: |
+    {
+      "ssh": "",
+      "interface": "tcp://frontend",
+      "registration": 58173,
+      "control": 36605,
+      "mux": 33125,
+      "task": 52457,
+      "task_scheme": "leastload",
+      "iopub": 46543,
+      "notification": 40483,
+      "broadcast": 38351,
+      "key": "9f8d6a2f-34485b850956c550ef9c68e7",
+      "curve_serverkey": null,
+      "location": "frontend",
+      "pack": "json",
+      "unpack": "json",
+      "signature_scheme": "hmac-sha256"
+    }
+

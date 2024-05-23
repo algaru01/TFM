@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+  labels:
+    app: my-app
+spec:
+  containers:
+  - name: frontend
+    image: agalrui/debian-ipython-fn
+    # command: [ /bin/sh ]
+    # args: [-c,while true;do sleep 20;done]
+      
+
+    volumeMounts:
+    - name: frontend-volume
+      mountPath: /home/jupyter/.ipython/profile_default/security/
+  volumes:
+  - name: frontend-volume
+    configMap:
+      defaultMode: 0777
+      name: ipythonconf-fn
+      items:
+      - key: ipcontroller-engine.json
+        path: ipcontroller-engine.json
+      - key: ipcontroller-client.json
+        path: ipcontroller-client.json
