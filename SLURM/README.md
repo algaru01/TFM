@@ -51,3 +51,34 @@ Remove the Cluster created by using `docker-compose`:
 ```console
 docker-compose down
 ```
+
+## Test
+You can test everything is working by accessing the head node.
+
+There you can check if slurm is correctly installed and print the *Compute Nodes*.
+```
+scontrol --version
+scontrol show nodes
+sinfo
+```
+
+Finally, you can try launching a job.
+Create a script with the following.
+``` prueba.sh
+#!/bin/bash
+#SBATCH --job-name=test_job
+#SBATCH --output=test_job_output.txt
+#SBATCH --ntasks=1
+#SBATCH --time=00:01:00
+
+echo "Hola, mundo!"
+```
+And launch it.
+```
+sbatch <script>
+```
+
+You can check the queues.
+```
+squeue
+```

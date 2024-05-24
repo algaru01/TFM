@@ -9,10 +9,19 @@ services:
     expose:
       - "6817"
 
-  compute-node:
+  compute-node1:
     image: debian-slurm-cn:latest
-    container_name: slurm-compute-node
+    container_name: slurm-compute-node1
     hostname: linux1
+    expose:
+      - "6818"
+    depends_on:
+      - "head-node"
+
+  compute-node2:
+    image: debian-slurm-cn:latest
+    container_name: slurm-compute-node2
+    hostname: linux2
     expose:
       - "6818"
     depends_on:
