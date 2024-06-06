@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: linux
+spec:
+  selector:
+    matchLabels:
+      app: worker-pod
+  serviceName: workers-service
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: worker-pod
+    spec:
+      containers:
+      - name: linux
+        image: agalrui/debian-slurm
+        # command: ["tail", "-f", "/dev/null"] 
+
+        volumeMounts:
+        - name: frontend-volume
+          mountPath: /etc/slurm/
+      volumes:
+      - name: frontend-volume
+        configMap:
+          defaultMode: 0777
+          name: slurm-conf-cn
+          items:
+          - key: slurm.conf
+            path: slurm.conf
+          - key: cgroup.conf
+            path: cgroup.conf
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: workers-service
+spec:
+  selector:
+    app: worker-pod
+  ports:
+  - name: listen
+    port: 6818
+    targetPort: 6818

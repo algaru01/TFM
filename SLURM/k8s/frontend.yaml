@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+  labels:
+    app: my-app
+spec:
+  hostname: linux-hn
+  containers:
+  - name: frontend
+    image: agalrui/debian-slurm-hn
+    # command: [ /bin/sh ]
+    # args: [-c,while true;do sleep 20;done]
+      
+
+    volumeMounts:
+    - name: frontend-volume
+      mountPath: /etc/slurm/
+  volumes:
+  - name: frontend-volume
+    configMap:
+      defaultMode: 0777
+      name: slurm-conf
+      items:
+      - key: slurm.conf
+        path: slurm.conf
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: linux-hn
+spec:
+  selector:
+    app: my-app
+  ports:
+    - name: listen
+      port: 6817
+      targetPort: 6817
