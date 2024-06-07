@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: frontend
   labels:
-    app: my-app
+    type: head-node
 spec:
   hostname: linux-hn
   containers:
@@ -33,7 +33,7 @@ metadata:
   name: linux-hn
 spec:
   selector:
-    app: my-app
+    type: head-node
   ports:
     - name: listen
       port: 6817

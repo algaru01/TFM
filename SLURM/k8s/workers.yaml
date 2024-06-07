@@ -5,13 +5,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: worker-pod
+      type: compute-node
   serviceName: workers-service
   replicas: 3
   template:
     metadata:
       labels:
-        app: worker-pod
+        type: compute-node
     spec:
       containers:
       - name: linux
@@ -40,7 +40,7 @@ metadata:
   name: workers-service
 spec:
   selector:
-    app: worker-pod
+    type: compute-node
   ports:
   - name: listen
     port: 6818
