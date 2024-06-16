@@ -1,17 +1,40 @@
-# Slurm Cluster in Kubernetes
+# Slurm Cluster in Kubernetes with Helm
+This directory contains a Helm Chart to create a *Multi-container Slurm Cluster*.
 
-This folder contains Kubernetes manifests to create a *Multi-container Slurm Cluster*.
+## Folder Structure
+### `templates/`
+A directory of templates that, when combined with values, will generate valid Kubernetes manifest files.
 
-## `frontend.yaml`
-It creates a `head-node` `pod` that will run a `debian-slurm-hn` image created in `docker/`. It mounts a volume from a `ConfigMap` in `/etc/slurm/` to automate the `slurm.conf`.
-This way, we are actually overwriting the configuration file we used in the image building. 
-Even though this might seem a bit tricky, it allows us to create all Kubernetes objects easily while also enabling isolated testing of images.
+### `values.yaml`
+The default configuration values for this chart.
 
-Lastly it puts a `Service` in front of this `pod` so `compute-nodes` can communicate with it at the port specified.
+### `values.schema.json`
+A JSON Schema for imposing a structure on the `values.yaml` file.
 
-## `workers.yaml`
-It creates a `StatefulSet` that will generate a specified number of `compute-node` replicas using the `debian-slurm-cn` image created in the `docker/` directory. Additionally, it mounts a `ConfigMap` in `/etc/slurm/` and sets up a `Service` for the same reasons specified in the *frontend*.
+### `Chart.yaml`
+A YAML file containing information about the chart.
 
-## `configmap.yaml`
-It contains all configuraton files needed for automatization. 
+### `Makefile`
+Makefile given to automate chart installation and uninstallation.
+
+## Create Chart
+You can use given `Makefile` to create the chart.
+
+This will uninstall any Chart called slurm-cluster (if installed) and install a new one:
+```
+make
+```
+
+You can also do it manually:
+```
+helm install slurm-cluster slurm/
+helm uninstall slurm-cluster
+```
+
+## Debug
+You can debug your resulting manifiestos using given `Makefile`:
+```
+make template
+```
+
 

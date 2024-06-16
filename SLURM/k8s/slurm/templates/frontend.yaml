@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: frontend
+  name: {{ .Release.Name }}-frontend
   labels:
     type: head-node
 spec:
-  hostname: linux-hn
+  hostname: {{ include "slurm.frontend.hostname" . }}
   containers:
   - name: frontend
     image: agalrui/debian-slurm-hn
@@ -20,7 +20,7 @@ spec:
   - name: frontend-volume
     configMap:
       defaultMode: 0777
-      name: slurm-conf
+      name: {{ .Release.Name }}-slurm-conf
       items:
       - key: slurm.conf
         path: slurm.conf
@@ -30,11 +30,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: linux-hn
+  name: {{ include "slurm.frontend.hostname" . }}
 spec:
+  clusterIP: None
   selector:
     type: head-node
   ports:
     - name: listen
-      port: 6817
-      targetPort: 6817
+      port: {{ .Values.frontend.slurmctldPort }}
+      targetPort: {{ .Values.frontend.slurmctldPort }}
