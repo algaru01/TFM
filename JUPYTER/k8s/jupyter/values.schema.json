@@ -1,0 +1,115 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "title": "Values",
+    "type": "object",
+    "required": [ "frontend", "workers", "nfsVolume" ],
+  
+    "properties": {
+  
+      "frontend": {
+        "description": "Frontend Node values",
+        "type": "object",
+        "required": [ "hostname","enginePorts", "clientPorts", "jupyterServerPort" ],
+        "properties": {
+  
+          "hostname": {
+            "description": "Hostname for head node. (Chart name will be added)",
+            "type": "string",
+            "examples": ["<chartName>-frontend"]
+          },
+  
+          "enginePorts": {
+            "description": "Ports used in the ipcontroller-engine.json.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "port"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1024,
+                  "maximum": 65535
+                }
+              }
+            }
+          },
+
+          "clientPorts": {
+            "description": "Ports used in the ipcontroller-client.json.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "port"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1024,
+                  "maximum": 65535
+                }
+              }
+            }
+          },
+
+          "jupyterServerPort": {
+            "description": "Port used in the Jupyter Server (pod side).",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          }
+        }
+      },
+  
+      "workers": {
+        "description": "Worker Nodes values",
+        "type": "object",
+        "required": ["baseHostname", "numReplicas"],
+        "properties": {
+  
+          "baseHostname": {
+            "description": "Base name used to create complete hostname when added number of replica. (Chart name will be added)",
+            "type": "string",
+            "examples": ["<chartName>-worker-<replicaID>"]
+          },
+  
+          "slurmdPort": {
+            "description": "Port used for slurmd demon (communication with head node).",
+            "type": "integer",
+            "minimum": 1024,
+            "maximum": 49151,
+            "default": 6818
+          },
+  
+          "numReplicas": {
+            "description": "Number of worker node replicas.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          }
+        }
+      },
+
+      "nfsVolume": {
+        "description": "NFS Volume mounted for shared ipcontroller-engine.json and ipcontroller-client.json",
+        "type": "object",
+        "required": ["server", "path"],
+        "properties": {
+
+          "server": {
+            "description": "Server where NFS is located.",
+            "type": "string"
+          },
+
+          "path": {
+            "description": "Path in the server where shared directory is located.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }

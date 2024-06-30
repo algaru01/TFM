@@ -8,7 +8,7 @@ USER jupyter
 WORKDIR /home/jupyter
 
 # Crear archivo de configuración para ipyparallel
-COPY jupyter_config.py /home/jupyter/.ipython/profile_default/jupyter_config.py
+COPY ipcontroller_config.py /home/jupyter/config/ipcontroller_config.py
 
 # Expone el puerto 8888 para acceder a Jupyter Notebook desde fuera del contenedor
 EXPOSE 8888
