@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "slurm.workers.baseHostname" . }}
+spec:
+  selector:
+    matchLabels:
+      type: compute-node
+  serviceName: {{ .Release.Name }}-workers-service
+  replicas: {{ .Values.workers.numReplicas }}
+  template:
+    metadata:
+      labels:
+        type: compute-node
+    spec:
+      containers:
+      - name: {{ include "slurm.workers.baseHostname" . }}
+        image: agalrui/debian-slurm-cn
+        # command: ["tail", "-f", "/dev/null"] 
+        command: ["/bin/sh", "/tmp/startup/startup-cn.sh"]
+
+        volumeMounts:
+        - name: frontend-volume
+          mountPath: /etc/slurm/
+        - name: startup-volume
+          mountPath: /tmp/startup/
+      volumes:
+      - name: frontend-volume
+        configMap:
+          defaultMode: 0777
+          name: {{ .Release.Name }}-slurm-conf
+          items:
+          - key: slurm.conf
+            path: slurm.conf
+          - key: cgroup.conf
+            path: cgroup.conf
+        
+      - name: startup-volume
+        configMap:
+          defaultMode: 0777
+          name: {{ .Release.Name }}-startup
+          items:
+          - key: startup-cn.sh
+            path: startup-cn.sh
+      
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-workers-service
+spec:
+  selector:
+    type: compute-node
+  ports:
+  - name: listen
+    port: {{ .Values.workers.slurmdPort }}
+    targetPort: {{ .Values.workers.slurmdPort }}
