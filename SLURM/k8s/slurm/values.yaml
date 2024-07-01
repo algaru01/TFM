@@ -1,0 +1,10 @@
+# head node values
+frontend:
+  hostname: frontend-hn
+  slurmctldPort: 6817 # https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmctldPort
+
+# compute nodes values
+workers:
+  baseHostname: lin
+  slurmdPort: 6818 # https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdPort
+  numReplicas: 3

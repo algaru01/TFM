@@ -28,3 +28,10 @@ attach_cn:
 remove:
 	docker stop ${HN_CONT_NAME} ${CN_CONT_NAME}
 	docker rm 	${HN_CONT_NAME} ${CN_CONT_NAME}
+
+push:
+	docker tag 	${HEAD-NODE_IMG}:${HEAD-NODE_IMG-TAG}  agalrui/${HEAD-NODE_IMG}:${HEAD-NODE_IMG-TAG}
+	docker push agalrui/${HEAD-NODE_IMG}:${HEAD-NODE_IMG-TAG}
+
+	docker tag 	${COMPUTE-NODE_IMG}:${COMPUTE-NODE_IMG-TAG}  agalrui/${COMPUTE-NODE_IMG}:${COMPUTE-NODE_IMG-TAG}
+	docker push agalrui/${COMPUTE-NODE_IMG}:${COMPUTE-NODE_IMG-TAG}

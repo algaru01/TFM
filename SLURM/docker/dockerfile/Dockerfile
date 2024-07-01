@@ -7,7 +7,7 @@ ENV SLURMVER=23.11.6
 RUN apt-get update
 
 # Install tools for debugging
-RUN apt-get install -y procps vim net-tools hostname
+RUN apt-get install -y procps vim net-tools hostname iputils-ping dnsutils
 
 RUN apt-get install -y sudo openssh-server
 
@@ -43,6 +43,7 @@ RUN groupadd -g $SLURMUSER slurm && \
 RUN apt install -y hwloc bpfcc-tools dbus
 
 # 2.2. Slurm
+RUN apt-get update
 RUN apt-get install -y  \
         wget            \
         build-essential \
