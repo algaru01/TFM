@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.workers.baseHostname }}
+spec:
+  selector:
+    matchLabels:
+      type: worker-node
+  replicas: {{ .Values.workers.numReplicas }}
+  template:
+    metadata:
+      labels:
+        type: worker-node
+    spec:
+      containers:
+      - name: worker
+        image: agalrui/debian-ipython-wn
+        # command: ["ipengine", "--IPEngine.extra_config_file=/home/jupyter/config/ipengine_config.py"]
+        # command: ["tail", "-f", "/dev/null"]
+
+        volumeMounts:
+        - name: worker-volumen
+          mountPath: /home/jupyter/config
+
+        - name: nfs
+          mountPath: "/home/jupyter/my-nfs"
+          readOnly: false
+
+      volumes:
+        - name: worker-volumen
+          configMap:
+            name: {{ .Release.Name }}-ipythonconf
+            items:
+              - key: ipengine_config.py
+                path: ipengine_config.py
+            
+        - name: nfs
+          persistentVolumeClaim:
+            claimName: nfs-pvc

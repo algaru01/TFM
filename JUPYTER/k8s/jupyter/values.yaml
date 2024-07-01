@@ -1,0 +1,43 @@
+frontend:
+  hostname: frontend
+  enginePorts:
+    - name: registration
+      port: 58173
+    - name: control
+      port: 36827
+    - name: mux
+      port: 51387
+    - name: task
+      port: 33439
+    - name: iopub
+      port: 33613
+    - name: hb-ping
+      port: 34595
+    - name: hb-pong
+      port: 56171
+    - name: broadcast1
+      port: 59031
+    - name: broadcast2
+      port: 56287
+  clientPorts:
+    - name: control
+      port: 36605
+    - name: mux
+      port: 33125
+    - name: task
+      port: 52457
+    - name: iopub
+      port: 46543
+    - name: notification
+      port: 40483
+    - name: broadcast
+      port: 38351
+  jupyterServerPort: 80
+
+workers:
+  baseHostname: worker
+  numReplicas: 2
+
+nfsVolume:
+  server: 192.168.1.158
+  path: "/mnt/nfs_tfm/"

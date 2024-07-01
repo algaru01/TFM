@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-frontend
+  labels:
+    type: frontend-node
+spec:
+  securityContext:
+    fsGroup: 1000
+  initContainers:
+    - name: volume-mount-hack
+      image: busybox
+      command: ["sh", "-c", "chown -R 1000:1000 /home/jupyter/my-nfs"]
+      volumeMounts:
+        - name: nfs
+          mountPath: "/home/jupyter/my-nfs"
+
+  hostname: {{ .Values.frontend.hostname }}
+
+  containers:
+  - name: frontend
+    image: agalrui/debian-ipython-fn
+    # command: ["ipcontroller", "--IPController.extra_config_file=/home/jupyter/config/ipcontroller_config.py"]
+    # command: ["tail", "-f", "/dev/null"]
+    volumeMounts:
+    - name: frontend-volume
+      mountPath: /home/jupyter/config
+  
+    - name: nfs
+      mountPath: "/home/jupyter/my-nfs"
+      readOnly: false
+
+  volumes:
+
+    - name: nfs
+      persistentVolumeClaim:
+        claimName: nfs-pvc
+
+    - name: frontend-volume
+      configMap:
+        defaultMode: 0777
+        name: {{ .Release.Name }}-ipythonconf
+        items:
+          - key: ipcontroller_config.py
+            path: ipcontroller_config.py
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-frontend-service
+spec:
+  clusterIP: None
+  selector:
+    type: frontend-node
+  ports:
+    {{- range .Values.frontend.enginePorts }}
+    - name: {{ .name }}-engine
+      protocol: TCP
+      port: {{ .port }}
+      targetPort: {{ .port }}
+    {{ end }}
+
+    - name: jupyter
+      protocol: TCP
+      port: {{ .Values.frontend.jupyterServerPort }}
+      targetPort: 8888
+
+    {{ range .Values.frontend.clientPorts }}
+    - name: {{ .name }}-client
+      protocol: TCP
+      port: {{ .port }}
+      targetPort: {{ .port }}
+    {{ end }}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-frontend-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: {{ .Release.Name }}-frontend-service  # Nombre del servicio que quieres exponer
+            port:
+              number: {{ .Values.frontend.jupyterServerPort }}  # Puerto del servicio Jupyter
+

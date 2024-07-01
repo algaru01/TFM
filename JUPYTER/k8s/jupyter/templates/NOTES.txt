@@ -1,0 +1,13 @@
+
+To access Jupyter Notebook Server you must first know Ingress IP:
+
+kubectl get ingress jupyter-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
+And then the token generated in the Frontend:
+
+kubectl logs frontend | grep -o 'token=[a-f0-9]*' | head -n 1 | awk -F= '{print $2}'
+
+Now, you can acces via HTTP:
+
+http:<ingress-ip>/tree?token=<token>
+

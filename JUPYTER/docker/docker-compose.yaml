@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+
+  frontend-node:
+    image: debian-ipython-fn:latest
+    container_name: jupyter-frontend
+    ports:
+      - "8888:8888"
+
+  worker-node:
+    image: debian-ipython-wn:latest
+    container_name: jupyter-worker
+    # deploy:
+    #   replicas: 2
+    depends_on:
+      - "frontend-node"
