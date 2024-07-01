@@ -77,14 +77,6 @@
             "examples": ["<chartName>-worker-<replicaID>"]
           },
   
-          "slurmdPort": {
-            "description": "Port used for slurmd demon (communication with head node).",
-            "type": "integer",
-            "minimum": 1024,
-            "maximum": 49151,
-            "default": 6818
-          },
-  
           "numReplicas": {
             "description": "Number of worker node replicas.",
             "type": "integer",
