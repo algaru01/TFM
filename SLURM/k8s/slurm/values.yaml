@@ -8,3 +8,7 @@ workers:
   baseHostname: lin
   slurmdPort: 6818 # https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdPort
   numReplicas: 3
+
+nfsVolume:
+  server: 192.168.1.158
+  path: "/mnt/nfs_tfm/slurm/"

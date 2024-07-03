@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shared-storage
+spec:
+
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs-subdir
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: {{ .Values.nfsVolume.server}}
+    path: {{ .Values.nfsVolume.path}}
+    readOnly: false
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+spec:
+
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "nfs-subdir"
+  resources:
+    requests:
+      storage: 100Mi

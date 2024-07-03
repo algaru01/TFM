@@ -7,23 +7,28 @@ metadata:
 spec:
   hostname: {{ include "slurm.frontend.hostname" . }}
   containers:
-  - name: frontend
-    image: agalrui/debian-slurm-hn
-    # command: [ /bin/sh ]
-    # args: [-c,while true;do sleep 20;done]
-      
+    - name: frontend
+      image: agalrui/debian-slurm-hn
+      # command: [ /bin/sh ]
+      # args: [-c,while true;do sleep 20;done]
 
-    volumeMounts:
-    - name: frontend-volume
-      mountPath: /etc/slurm/
+      volumeMounts:
+        - name: frontend-volume
+          mountPath: /etc/slurm/
+        - name: nfs
+          mountPath: /shared-vol
+
   volumes:
-  - name: frontend-volume
-    configMap:
-      defaultMode: 0777
-      name: {{ .Release.Name }}-slurm-conf
-      items:
-      - key: slurm.conf
-        path: slurm.conf
+    - name: nfs
+      persistentVolumeClaim:
+        claimName: nfs-pvc
+    - name: frontend-volume
+      configMap:
+        defaultMode: 0777
+        name: {{ .Release.Name }}-slurm-conf
+        items:
+        - key: slurm.conf
+          path: slurm.conf
 
 ---
 
