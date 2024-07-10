@@ -1,0 +1,67 @@
+{{- if .Values.db.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-db
+  labels:
+    type: db-node
+spec:
+  # securityContext:
+  #   runAsUser: 1002
+  hostname: {{ include "slurm.db.hostname" . }}
+  initContainers:
+    - name: init-copy-permissions
+      image: busybox
+      command: ["ash","-c"]
+      args: ["cp              /config/slurmdbd.conf    /etc/slurm/slurmdbd.conf && \
+              cp              /config/slurm.conf       /etc/slurm/slurm.conf    && \
+              chown 1002:1002 /etc/slurm/slurmdbd.conf /etc/slurm/slurm.conf    && \
+              chmod 600       /etc/slurm/slurmdbd.conf /etc/slurm/slurm.conf"]
+      volumeMounts:
+        - name: config-volume
+          mountPath: /config/
+        - name: emptydir-volume
+          mountPath: /etc/slurm
+  containers:
+    - name: db
+      image: agalrui/debian-slurm-db
+      # command: ["tail", "-f", "/dev/null"]
+      env:
+        - name: MYSQL_SLURM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+      volumeMounts:
+        - name: emptydir-volume
+          mountPath: /etc/slurm/
+
+  volumes:
+    - name: config-volume
+      configMap:
+        defaultMode: 0600
+        name: {{ .Release.Name }}-slurm-conf
+        items:
+        - key: slurm.conf
+          path: slurm.conf
+        - key: slurmdbd.conf
+          path: slurmdbd.conf
+    - name: emptydir-volume
+      emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "slurm.db.hostname" . }}
+spec:
+  clusterIP: None
+  selector:
+    type: db-node
+  ports:
+    - name: listen
+      port: {{ .Values.db.slurmdbdPort }}
+      targetPort: {{ .Values.db.slurmdbdPort }}
+
+{{- end }}

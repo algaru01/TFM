@@ -5,18 +5,46 @@ A directory of templates that, when combined with values, will generate valid Ku
 It defines some templates to be used in other YAML files. For example to automize nodes hostname or FQDN.
 
 ## `frontend.yaml`
-It creates a `head-node` `pod` that will run a `debian-slurm-hn` image created in `docker/`. It mounts a volume from a `ConfigMap` in `/etc/slurm/` to automate the `slurm.conf`.
-This way, we are actually overwriting the configuration file we used in the image building. 
-Even though this might seem a bit tricky, it allows us to create all Kubernetes objects easily while also enabling isolated testing of images.
+It creates a `head-node` `pod`.
+* It first creats a `initContainer` that will wait until *slurmdbd* is ready.
+* Then, it will run a `debian-slurm-hn` image created in `docker/`. This mounts three volumes:
+    * **Init Script**. Init script mounted from a `configmap` in `startup.yaml` to execute needed init daemons.
+    * **NFS**. Shared NFS `volume` from `volume.yaml` for *workers* job results.
+    * **Configuration Files**. Configuration files from a `confgimap` in `config.yaml`.
 
-Lastly it puts a `Service` in front of this `pod` so `compute-nodes` can communicate with it at the port specified.
+Lastly it puts a `Service` in front of this `pod` so *workers* can communicate with it at the port specified.
 
 ## `workers.yaml`
-It creates a `StatefulSet` that will generate a specified number of `compute-node` replicas using the `debian-slurm-cn` image created in the `docker/` directory. Additionally, it mounts a `ConfigMap` in `/etc/slurm/` and sets up a `Service` for the same reasons specified in the *frontend*.
+It creates a `compute-node` `StatefulSet`.
+* It first creates a `initContainer` that will wait until *slurmctld* is ready.
+* Then, it creates a specified number of `compute-node` replicas using the `debian-slurm-cn` image created in the `docker/` directory. This mounts three volumes:
+    * **Init Script**. Init script mounted from a `configmap` in `startup.yaml` to execute needed init daemons.
+    * **NFS**. Shared NFS `volume` from `volume.yaml` for *workers* job results.
+    * **Configuration Files**. Configuration files from a `confgimap` in `config.yaml`.
 
-## `configmap.yaml`
-It contains all configuraton files needed for automatization. 
+Lastly it puts a `Service` in front of this `pod` so *frontend* can communicate with this `StatefulSet` at the port specified.
 
-## `startup-cm.yaml`
-Startup scripts for both head and compute nodes.
+## `db.yaml`
+It creates a `db-node` `pod`.
+* It first creates a `initContainer` that will copy files from a `configmap volume` to an `emptyDir Volume` and then it will set up permissions so only slurm user can access those files. The reaseon for this is because *slurmdbd*, unlike other *Slurm daemons*, force you to set this permissions up, and `configmp volumes` do not allow you to change this. So we must use an intermediary directory. This way we mount two volumes here.
+    * **Configuration Files**. Configuration files from a `confgimap` in `config.yaml`.
+    * **Empty Dir**. `emptyDir` used as intermediary for configuration files.
+* Then, it creates a container using the `debian-slurm-db` image created in the `docker/` directory. It mounts only one volume:
+    * **Empty Dir**. `emptyDir` used as intermediary for configuration files and filled previously in the `initContainer`.
+It also uses a `secret` form `config.yaml` for `mysql` password.
+
+Finally, we use again a `Service` for communication with the rest of *Slurm daemons*.
+
+## `config.yaml`
+It contains all configuraton files needed for automatization:
+* **slurm.conf**. General configuration of Slurm. Used in all nodes.
+* **slurmdb.conf**. Configuration for *slurmdbd*. Used in *db-node*.
+* **cgroup.conf**. Configuration of *cgroup plugin*. Used in *compute-nodes*.
+
+## `startup.yaml`
+Startup scripts for all nodes.
+
+## `volume.yaml`
+It creates the `PersistentVolume` and `PersistentVolumeClaim` for the NFS volume.
+
 

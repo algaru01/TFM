@@ -9,6 +9,12 @@ workers:
   slurmdPort: 6818 # https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdPort
   numReplicas: 3
 
+db:
+  enabled: true
+  hostname: db-node
+  slurmdbdPort: 6819
+  mySqlPassword: password
+
 nfsVolume:
   server: 192.168.1.158
   path: "/mnt/nfs_tfm/slurm/"

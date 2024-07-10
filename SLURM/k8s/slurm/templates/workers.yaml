@@ -13,6 +13,15 @@ spec:
       labels:
         type: compute-node
     spec:
+      initContainers:
+      - name: wait-for-frontend
+        image: busybox
+        command: ["sh","-c"]
+        args: ["until nc -zv {{ include "slurm.frontend.hostname" . }} {{ .Values.frontend.slurmctldPort }};
+                do
+                  echo '-- db node ({{ include "slurm.frontend.hostname" . }}) is not available.  Sleeping ...';
+                  sleep 5;
+                done"] 
       containers:
         - name: {{ include "slurm.workers.baseHostname" . }}
           image: agalrui/debian-slurm-cn
@@ -20,7 +29,7 @@ spec:
           command: ["/bin/sh", "/tmp/startup/startup-cn.sh"]
 
           volumeMounts:
-            - name: frontend-volume
+            - name: config-volume
               mountPath: /etc/slurm/
             - name: startup-volume
               mountPath: /tmp/startup/
@@ -30,7 +39,7 @@ spec:
         - name: nfs
           persistentVolumeClaim:
             claimName: nfs-pvc
-        - name: frontend-volume
+        - name: config-volume
           configMap:
             defaultMode: 0777
             name: {{ .Release.Name }}-slurm-conf

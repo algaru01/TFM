@@ -18,5 +18,5 @@ test:
 	kubectl exec ${FRONTEND_NAME} -- squeue
 
 	@echo "${GREEN}>> Print result.${NC}"
-	sleep 1
+	sleep 3
 	kubectl exec ${FRONTEND_NAME} -- cat /shared-vol/test_job.out

@@ -3,6 +3,7 @@ FROM debian:latest
 ENV MUNGEUSER=1001
 ENV SLURMUSER=1002
 ENV SLURMVER=23.11.6
+ENV MYSQL_VER=0.8.32-1
 
 RUN apt-get update
 
@@ -41,6 +42,13 @@ RUN groupadd -g $SLURMUSER slurm && \
 # 2.1 Slurm Plugins
 # Instalamos paquetes necesarios para el plugin task/cgroup
 RUN apt install -y hwloc bpfcc-tools dbus
+
+# Instalamos mysql-dev-libraries para el plugin accounting_storage/as_mysql
+RUN apt install -y lsb-release gnupg
+RUN wget -P /tmp https://dev.mysql.com/get/mysql-apt-config_${MYSQL_VER}_all.deb
+RUN DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_${MYSQL_VER}_all.deb
+RUN apt-get update
+RUN apt install -y libmariadb-dev-compat libmariadb-dev
 
 # 2.2. Slurm
 RUN apt-get update

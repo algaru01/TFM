@@ -8,21 +8,30 @@ services:
     hostname: linux-hn
     expose:
       - "6817"
-
-  compute-node1:
-    image: debian-slurm-cn:latest
-    container_name: slurm-compute-node1
-    hostname: linux-1
-    expose:
-      - "6818"
     depends_on:
-      - "head-node"
+      - "db-node"
 
-  compute-node2:
-    image: debian-slurm-cn:latest
-    container_name: slurm-compute-node2
-    hostname: linux-2
+  # compute-node1:
+  #   image: debian-slurm-cn:latest
+  #   container_name: slurm-compute-node1
+  #   hostname: linux-1
+  #   expose:
+  #     - "6818"
+  #   depends_on:
+  #     - "head-node"
+
+  # compute-node2:
+  #   image: debian-slurm-cn:latest
+  #   container_name: slurm-compute-node2
+  #   hostname: linux-2
+  #   expose:
+  #     - "6818"
+  #   depends_on:
+  #     - "head-node"
+
+  db-node:
+    image: debian-slurm-db:latest
+    container_name: slurm-db-node
+    hostname: linux-db
     expose:
-      - "6818"
-    depends_on:
-      - "head-node"
+      - "6819"

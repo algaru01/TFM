@@ -9,3 +9,7 @@
 {{- define "slurm.workers.service.fqdn" }}
     {{- .Release.Name }}-workers-service.default.svc.cluster.local
 {{- end }}
+
+{{- define "slurm.db.hostname" }}
+    {{- .Release.Name }}-{{ .Values.db.hostname -}}
+{{- end }}

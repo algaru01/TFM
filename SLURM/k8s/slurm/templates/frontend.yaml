@@ -6,29 +6,52 @@ metadata:
     type: head-node
 spec:
   hostname: {{ include "slurm.frontend.hostname" . }}
+
+  {{- if .Values.db.enabled }}
+  initContainers:
+  - name: wait-for-db
+    image: busybox
+    command: ["sh","-c"]
+    args: ["until nc -zv {{ include "slurm.db.hostname" . }} {{ .Values.db.slurmdbdPort }};
+            do
+              echo '-- db node ({{ include "slurm.db.hostname" . }}) is not available.  Sleeping ...';
+              sleep 5;
+            done"] 
+  {{- end }}
+
   containers:
     - name: frontend
       image: agalrui/debian-slurm-hn
-      # command: [ /bin/sh ]
-      # args: [-c,while true;do sleep 20;done]
+      # command: ["tail", "-f", "/dev/null"]
+      command: ["/bin/sh", "/tmp/startup/startup-hn.sh"]
 
       volumeMounts:
-        - name: frontend-volume
+        - name: config-volume
           mountPath: /etc/slurm/
         - name: nfs
           mountPath: /shared-vol
+        - name: startup-volume
+          mountPath: /tmp/startup/
 
   volumes:
     - name: nfs
       persistentVolumeClaim:
         claimName: nfs-pvc
-    - name: frontend-volume
+    - name: config-volume
       configMap:
         defaultMode: 0777
         name: {{ .Release.Name }}-slurm-conf
         items:
         - key: slurm.conf
           path: slurm.conf
+    
+    - name: startup-volume
+      configMap:
+        defaultMode: 0777
+        name: {{ .Release.Name }}-startup
+        items:
+        - key: startup-hn.sh
+          path: startup-hn.sh
 
 ---
 

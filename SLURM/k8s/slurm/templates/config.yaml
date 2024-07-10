@@ -110,13 +110,17 @@ data:
     #
     #
     # LOGGING AND ACCOUNTING
-    #AccountingStorageEnforce=0
-    #AccountingStorageHost=
-    #AccountingStoragePass=
-    #AccountingStoragePort=
-    #AccountingStorageType=
-    #AccountingStorageUser=
-    #AccountingStoreFlags=
+    
+    {{- if .Values.db.enabled }}
+      #AccountingStorageEnforce=0
+      AccountingStorageHost={{ include "slurm.db.hostname" . }}
+      AccountingStoragePass=/var/run/munge/munge.socket.2
+      AccountingStoragePort={{ .Values.db.slurmdbdPort }}
+      AccountingStorageType=accounting_storage/slurmdbd
+      AccountingStorageUser=slurm
+      #AccountingStoreFlags=
+    {{- end }}
+
     #JobCompHost=
     #JobCompLoc=
     #JobCompParams=
@@ -158,6 +162,15 @@ data:
     PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
     # PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
 
+{{- if .Values.db.enabled }}
+  slurmdbd.conf: |
+    DbdHost={{ include "slurm.db.hostname" . }}
+    DbdPort= {{ .Values.db.slurmdbdPort }}
+    StorageType=accounting_storage/mysql
+    SlurmUser=slurm
+    StoragePass={{ .Values.db.mySqlPassword }}
+{{- end }}
+
   cgroup.conf: |
     ###
     # Slurm cgroup support configuration file.
@@ -167,3 +180,15 @@ data:
     ConstrainRAMSpace=yes
     ConstrainSwapSpace=yes
     CgroupPlugin=cgroup/v1
+
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+immutable: true
+data:
+  password: {{ .Values.db.mySqlPassword | b64enc }}
