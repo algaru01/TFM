@@ -9,8 +9,9 @@ workers:
   slurmdPort: 6818 # https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdPort
   numReplicas: 3
 
+# db node values
 db:
-  enabled: true
+  enabled: false
   hostname: db-node
   slurmdbdPort: 6819
   mySqlPassword: password

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Values",
   "type": "object",
-  "required": [ "frontend", "workers" ],
+  "required": [ "frontend", "workers", "db", "nfsVolume" ],
 
   "properties": {
 
@@ -53,6 +53,58 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 10
+        }
+      }
+    },
+
+    "db": {
+      "description": "DB Node values",
+      "type": "object",
+      "required": ["enabled", "hostname", "slurmdbdPort", "mySqlPassword"],
+      "properties": {
+
+        "enabled": {
+          "description": "Choose whether to enable a Database for accounting.",
+          "type": "boolean"
+        },
+
+        "hostname": {
+          "description": "Base name used to create complete hostname when added number of replica. (Chart name will be added)",
+          "type": "string",
+          "examples": ["<chartName>-db"]
+        },
+
+        "slurmdbdPort": {
+          "description": "Port used for slurmdbd demon (communication with other nodes).",
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 49151,
+          "default": 6819
+        },
+
+        "mySqlPassword": {
+          "description": "Password for the mysql database.",
+          "type": "string",
+          "default": "password"
+        }
+      }
+    },
+
+    "nfsVolume": {
+      "description": "NFS shared volume for frontend and workers.",
+      "type": "object",
+      "required": ["server", "path"],
+      "properties": {
+
+        "server": {
+          "description": "IP for the NFS server.",
+          "type": "string",
+          "format": "ipv4"
+        },
+
+        "path": {
+          "description": "Path for the directory where NFS is mounted.",
+          "type": "string"
         }
       }
     }

@@ -20,3 +20,12 @@ test:
 	@echo "${GREEN}>> Print result.${NC}"
 	sleep 3
 	kubectl exec ${FRONTEND_NAME} -- cat /shared-vol/test_job.out
+
+	@echo "${BLUE}>> Make 3 nodes print a simple hello world with MPI ${NC}"
+	kubectl cp ./hello.c default/${FRONTEND_NAME}:/shared-vol
+	kubectl exec ${FRONTEND_NAME} -- mpicc /shared-vol/hello.c -o /shared-vol/hello
+	kubectl exec ${FRONTEND_NAME} -- sh -c 'printf "#!/bin/bash\n#SBATCH --job-name=test_job_mpi\n#SBATCH --output=/shared-vol/test_job_mpi.out\n#SBATCH --ntasks=3\n#SBATCH --time=00:01:00\n\n srun /shared-vol/hello \n" > prueba_mpi.sh'
+	kubectl exec ${FRONTEND_NAME} -- sbatch prueba_mpi.sh
+	@echo "${BLUE}>> Print result.${NC}"
+	sleep 3
+	kubectl exec ${FRONTEND_NAME} -- cat /shared-vol/test_job_mpi.out

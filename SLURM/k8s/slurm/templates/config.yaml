@@ -30,7 +30,7 @@ data:
     #MaxJobCount=10000
     #MaxStepCount=40000
     #MaxTasksPerNode=512
-    #MpiDefault=
+    MpiDefault=pmix
     #MpiParams=ports=#-#
     #PluginDir=
     #PlugStackConfig=

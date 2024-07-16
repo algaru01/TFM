@@ -10,7 +10,7 @@ RUN apt-get update
 # Install tools for debugging
 RUN apt-get install -y procps vim net-tools hostname iputils-ping dnsutils
 
-RUN apt-get install -y sudo openssh-server
+RUN apt-get install -y sudo openssh-server openssh-client
 
 RUN mkdir /var/run/sshd
 
@@ -49,6 +49,9 @@ RUN wget -P /tmp https://dev.mysql.com/get/mysql-apt-config_${MYSQL_VER}_all.deb
 RUN DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_${MYSQL_VER}_all.deb
 RUN apt-get update
 RUN apt install -y libmariadb-dev-compat libmariadb-dev
+
+# Instalamos OpenMPI
+RUN apt install -y openmpi-bin libopenmpi-dev
 
 # 2.2. Slurm
 RUN apt-get update
