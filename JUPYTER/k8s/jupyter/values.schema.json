@@ -1,107 +1,169 @@
 {
-    "$schema": "https://json-schema.org/draft-07/schema#",
-    "title": "Values",
-    "type": "object",
-    "required": [ "frontend", "workers", "nfsVolume" ],
-  
-    "properties": {
-  
-      "frontend": {
-        "description": "Frontend Node values",
-        "type": "object",
-        "required": [ "hostname","enginePorts", "clientPorts", "jupyterServerPort" ],
-        "properties": {
-  
-          "hostname": {
-            "description": "Hostname for head node. (Chart name will be added)",
-            "type": "string",
-            "examples": ["<chartName>-frontend"]
-          },
-  
-          "enginePorts": {
-            "description": "Ports used in the ipcontroller-engine.json.",
-            "type": "array",
-            "items": {
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Values",
+  "type": "object",
+  "required": ["frontend", "workers", "nfsVolume"],
+  "properties": {
+    "frontend": {
+      "description": "Frontend Node values",
+      "type": "object",
+      "required": ["hostname", "IPController", "jupyterServerPort"],
+      "properties": {
+        "hostname": {
+          "description": "Hostname for head node. (Chart name will be added)",
+          "type": "string",
+          "examples": ["<chartName>-frontend"]
+        },
+        "IPController": {
+          "description": "IPController configuration options",
+          "type": "object",
+          "required": ["logger", "heartmonitor", "db", "enginePorts", "clientPorts"],
+          "properties": {
+            "logger": {
+              "description": "Logger configuration options",
               "type": "object",
-              "required": ["name", "port"],
               "properties": {
-                "name": {
-                  "type": "string"
+                "log_datefmt": {
+                  "description": "The date format used by logging formatters for %(asctime)s",
+                  "type": "string",
+                  "default": "%Y-%m-%d %H:%M:%S"
                 },
-                "port": {
+                "log_format": {
+                  "description": "The Logging format template",
+                  "type": "string",
+                  "default": "[%(name)s]%(highlevel)s %(message)s"
+                },
+                "log_level": {
+                  "description": "Set the log level by value or name.",
+                  "enum": [0, 10, 20, 30, 40, 50, "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"]
+                },
+                "log_to_file": {
+                  "description": "Log output to a file",
+                  "type": "boolean",
+                  "default": false
+                },
+                "include_all_heartbeats": {
+                  "description": "Include all heartbeats in the log",
+                  "type": "boolean",
+                  "default": false
+                },
+                "verbose_crash": {
+                  "description": "Create a massive crash report when IPython encounters what may be an internal error.",
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
+            "heartmonitor": {
+              "description": "Heart monitor configuration options",
+              "type": "object",
+              "properties": {
+                "registration_timeout": {
+                  "description": "Timeout for registration",
                   "type": "integer",
-                  "minimum": 1024,
-                  "maximum": 65535
+                  "default": 0
+                },
+                "heartmonitor_period": {
+                  "description": "Period for heartmonitor in milliseconds",
+                  "type": "integer",
+                  "default": 3000
+                },
+                "max_heartmonitor_misses": {
+                  "description": "Maximum heartmonitor misses",
+                  "type": "integer",
+                  "default": 10
+                }
+              }
+            },
+            "db": {
+              "description": "Database configuration options",
+              "type": "object",
+              "properties": {
+                "db_class": {
+                  "description": "Database class to use",
+                  "type": "string",
+                  "default": "DictDB"
+                }
+              }
+            },
+            "enginePorts": {
+              "description": "Ports used in the ipcontroller-engine.json.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "port"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "port": {
+                    "type": "integer",
+                    "minimum": 1024,
+                    "maximum": 65535
+                  }
+                }
+              }
+            },
+            "clientPorts": {
+              "description": "Ports used in the ipcontroller-client.json.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "port"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "port": {
+                    "type": "integer",
+                    "minimum": 1024,
+                    "maximum": 65535
+                  }
                 }
               }
             }
-          },
-
-          "clientPorts": {
-            "description": "Ports used in the ipcontroller-client.json.",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["name", "port"],
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "integer",
-                  "minimum": 1024,
-                  "maximum": 65535
-                }
-              }
-            }
-          },
-
-          "jupyterServerPort": {
-            "description": "Port used in the Jupyter Server (pod side).",
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 65535
           }
+        },
+        "jupyterServerPort": {
+          "description": "Port used in the Jupyter Server (pod side).",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
         }
-      },
-  
-      "workers": {
-        "description": "Worker Nodes values",
-        "type": "object",
-        "required": ["baseHostname", "numReplicas"],
-        "properties": {
-  
-          "baseHostname": {
-            "description": "Base name used to create complete hostname when added number of replica. (Chart name will be added)",
-            "type": "string",
-            "examples": ["<chartName>-worker-<replicaID>"]
-          },
-  
-          "numReplicas": {
-            "description": "Number of worker node replicas.",
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10
-          }
+      }
+    },
+    "workers": {
+      "description": "Worker Nodes values",
+      "type": "object",
+      "required": ["baseHostname", "numReplicas"],
+      "properties": {
+        "baseHostname": {
+          "description": "Base name used to create complete hostname when added number of replica. (Chart name will be added)",
+          "type": "string",
+          "examples": ["<chartName>-worker-<replicaID>"]
+        },
+        "numReplicas": {
+          "description": "Number of worker node replicas.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
         }
-      },
-
-      "nfsVolume": {
-        "description": "NFS Volume mounted for shared ipcontroller-engine.json and ipcontroller-client.json",
-        "type": "object",
-        "required": ["server", "path"],
-        "properties": {
-
-          "server": {
-            "description": "Server where NFS is located.",
-            "type": "string"
-          },
-
-          "path": {
-            "description": "Path in the server where shared directory is located.",
-            "type": "string"
-          }
+      }
+    },
+    "nfsVolume": {
+      "description": "NFS Volume mounted for shared ipcontroller-engine.json and ipcontroller-client.json",
+      "type": "object",
+      "required": ["server", "path"],
+      "properties": {
+        "server": {
+          "description": "Server where NFS is located.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path in the server where shared directory is located.",
+          "type": "string"
         }
       }
     }
   }
+}

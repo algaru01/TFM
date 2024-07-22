@@ -15,5 +15,4 @@ test:
 	kubectl exec -i ${FRONTEND_NAME} -- python3 /home/jupyter/test.py
 
 	@echo "${GREEN}>> Get headers of the Jupyter Notebook Server ${NC}"
-
 	curl -I "http://$(INGRESS_IP)/tree?token=$(TOKEN)"

@@ -1,37 +1,52 @@
 frontend:
   hostname: frontend
-  enginePorts:
-    - name: registration
-      port: 58173
-    - name: control
-      port: 36827
-    - name: mux
-      port: 51387
-    - name: task
-      port: 33439
-    - name: iopub
-      port: 33613
-    - name: hb-ping
-      port: 34595
-    - name: hb-pong
-      port: 56171
-    - name: broadcast1
-      port: 59031
-    - name: broadcast2
-      port: 56287
-  clientPorts:
-    - name: control
-      port: 36605
-    - name: mux
-      port: 33125
-    - name: task
-      port: 52457
-    - name: iopub
-      port: 46543
-    - name: notification
-      port: 40483
-    - name: broadcast
-      port: 38351
+  IPController:
+    logger:
+      log_datefmt: "%Y-%m-%d %H:%M:%S"
+      log_format: "[%(name)s]%(highlevel)s %(message)s"
+      log_level: 30
+      log_to_file: False
+      include_all_heartbeats: False
+      verbose_crash: False
+    heartmonitor:
+      registration_timeout: 30
+      heartmonitor_period: 3000
+      max_heartmonitor_misses: 10
+    db:
+      db_class: DictDB
+    
+    enginePorts:
+      - name: registration
+        port: 58173
+      - name: control
+        port: 36827
+      - name: mux
+        port: 51387
+      - name: task
+        port: 33439
+      - name: iopub
+        port: 33613
+      - name: hb-ping
+        port: 34595
+      - name: hb-pong
+        port: 56171
+      - name: broadcast1
+        port: 59031
+      - name: broadcast2
+        port: 56287
+    clientPorts:
+      - name: control
+        port: 36605
+      - name: mux
+        port: 33125
+      - name: task
+        port: 52457
+      - name: iopub
+        port: 46543
+      - name: notification
+        port: 40483
+      - name: broadcast
+        port: 38351
   jupyterServerPort: 80
 
 workers:

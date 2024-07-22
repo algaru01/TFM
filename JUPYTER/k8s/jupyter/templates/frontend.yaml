@@ -55,7 +55,7 @@ spec:
   selector:
     type: frontend-node
   ports:
-    {{- range .Values.frontend.enginePorts }}
+    {{- range .Values.frontend.IPController.enginePorts }}
     - name: {{ .name }}-engine
       protocol: TCP
       port: {{ .port }}
@@ -67,7 +67,7 @@ spec:
       port: {{ .Values.frontend.jupyterServerPort }}
       targetPort: 8888
 
-    {{ range .Values.frontend.clientPorts }}
+    {{ range .Values.frontend.IPController.clientPorts }}
     - name: {{ .name }}-client
       protocol: TCP
       port: {{ .port }}
