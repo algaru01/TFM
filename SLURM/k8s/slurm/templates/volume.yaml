@@ -1,31 +1,33 @@
+{{- range $index, $user := .Values.users }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: shared-storage
+  name: pv-users-{{ .username }}
 spec:
-
-  persistentVolumeReclaimPolicy: Recycle
-  storageClassName: nfs-subdir
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   accessModes:
     - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs-subdir
   nfs:
-    server: {{ .Values.nfsVolume.server}}
-    path: {{ .Values.nfsVolume.path}}
+    server: {{ $.Values.nfsVolume.server}}
+    path: {{ $.Values.nfsVolume.basePath}}/user_home_dir_{{ $index }}
     readOnly: false
-
 ---
+{{- end }}
 
+{{- range .Values.users }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs-pvc
+  name: pvc-users-{{ .username }}
 spec:
-
   accessModes:
     - ReadWriteMany
-  storageClassName: "nfs-subdir"
+  storageClassName: nfs-subdir
   resources:
     requests:
       storage: 100Mi
+---
+{{- end }}

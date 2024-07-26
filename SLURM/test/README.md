@@ -5,4 +5,5 @@ For information about how to launch the cluster by using Helm go to `SLURM/k8s/R
 This `Makefile` will show information about the Cluster created and then send a job to print the hostname of each node.
 
 ## Troubleshooting
-Make sure `$FRONTEND_NAME` is the hostname of the head node and `$WORKERS_NAME` the hostname of the compute node (without its replica ID).
+> Make sure `$POD_FRONTEND` is the name of the head node pod and `$WORKERS_NAME` the name of the compute node pod (without its replica ID).
+> Make sure `$COTNAINER_FRONTEND` is the name of the main container of the Frontend pod.

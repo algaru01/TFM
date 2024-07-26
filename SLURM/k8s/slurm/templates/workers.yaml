@@ -31,14 +31,30 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/slurm/
+            - name: config-users-volume
+              mountPath: /etc/passwd
+              subPath: passwd
+            - name: config-users-volume
+              mountPath: /etc/shadow
+              subPath: shadow
+            - name: config-users-volume
+              mountPath: /etc/group
+              subPath: group
+            - name: config-users-volume
+              mountPath: /etc/gshadow
+              subPath: gshadow
             - name: startup-volume
               mountPath: /tmp/startup/
-            - name: nfs
-              mountPath: /shared-vol
+            {{- range .Values.users }}
+            - name: nfs-users-{{ .username }}
+              mountPath: /home/{{ .username }}
+            {{- end }}
       volumes:
-        - name: nfs
+        {{- range .Values.users }}
+        - name: nfs-users-{{ .username }}
           persistentVolumeClaim:
-            claimName: nfs-pvc
+            claimName: pvc-users-{{ .username }}
+        {{- end }}
         - name: config-volume
           configMap:
             defaultMode: 0777
@@ -48,6 +64,10 @@ spec:
               path: slurm.conf
             - key: cgroup.conf
               path: cgroup.conf
+        - name: config-users-volume
+          configMap:
+            defaultMode: 0777
+            name: {{ .Release.Name }}-users-config
         - name: startup-volume
           configMap:
             defaultMode: 0777

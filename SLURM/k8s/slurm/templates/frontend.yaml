@@ -7,8 +7,8 @@ metadata:
 spec:
   hostname: {{ include "slurm.frontend.hostname" . }}
 
-  {{- if .Values.db.enabled }}
   initContainers:
+  {{- if .Values.db.enabled }}
   - name: wait-for-db
     image: busybox
     command: ["sh","-c"]
@@ -17,6 +17,21 @@ spec:
               echo '-- db node ({{ include "slurm.db.hostname" . }}) is not available.  Sleeping ...';
               sleep 5;
             done"] 
+  {{- end }}
+  {{- if .Values.users }}
+  - name: users-home-dir
+    image: busybox
+    command: ["sh", "-c"]
+    args:
+    - |
+      {{- range $index, $user := .Values.users }}
+      chown -R {{ add 1100 $index }}:{{ add 1100 $index }} /home/{{ $user.username }}
+      {{- end }}
+    volumeMounts:
+    {{- range .Values.users }}
+    - name: nfs-users-{{ .username }}
+      mountPath: /home/{{ .username }}
+    {{- end }}
   {{- end }}
 
   containers:
@@ -28,15 +43,31 @@ spec:
       volumeMounts:
         - name: config-volume
           mountPath: /etc/slurm/
-        - name: nfs
-          mountPath: /shared-vol
+        - name: config-users-volume
+          mountPath: /etc/passwd
+          subPath: passwd
+        - name: config-users-volume
+          mountPath: /etc/shadow
+          subPath: shadow
+        - name: config-users-volume
+          mountPath: /etc/group
+          subPath: group
+        - name: config-users-volume
+          mountPath: /etc/gshadow
+          subPath: gshadow
+        {{- range .Values.users }}
+        - name: nfs-users-{{ .username }}
+          mountPath: /home/{{ .username }}
+        {{- end }}
         - name: startup-volume
           mountPath: /tmp/startup/
 
   volumes:
-    - name: nfs
+    {{- range .Values.users }}
+    - name: nfs-users-{{ .username }}
       persistentVolumeClaim:
-        claimName: nfs-pvc
+        claimName: pvc-users-{{ .username }}
+    {{- end }}
     - name: config-volume
       configMap:
         defaultMode: 0777
@@ -44,7 +75,10 @@ spec:
         items:
         - key: slurm.conf
           path: slurm.conf
-    
+    - name: config-users-volume
+      configMap:
+        defaultMode: 0777
+        name: {{ .Release.Name }}-users-config
     - name: startup-volume
       configMap:
         defaultMode: 0777
@@ -67,3 +101,18 @@ spec:
     - name: listen
       port: {{ .Values.frontend.slurmctldPort }}
       targetPort: {{ .Values.frontend.slurmctldPort }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ssh-service
+spec:
+  type: NodePort
+  selector:
+    type: head-node
+  ports:
+    - port: 22
+      targetPort: 22
+      nodePort: 30022

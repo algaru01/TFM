@@ -1,0 +1,32 @@
+ ---------------
+| Crear Usuario |
+ ---------------
+Si quieres crear un usuario deberás encriptar la contraseña previamente a un formato admitido por 'shadow', por ejemplo:
+>> openssl passwd -6 <contraseña>
+En este caso -6 significa que usará el algormitmo SHA-512
+
+ -----
+| SSH |
+ -----
+Para conectarte mediante a SSH a los nodos, si estas usando minikube puedes seguir alguno de los siguientes métodos:
+
+1. Conectandote a la VM de minikube.
+Puedes conectarte a la VM de minikube con:
+>> minikube ssh
+
+Y desde ahí conectarte directamente a cualquier Pod mediante su IP:
+>> ssh <usuario>@<pod_IP>
+
+2. A través de minikube usando el Service NodePort.
+Con el Service NodePort activo, la VM de minikube hace de proxy con los Pods. De este modo, puedes obtener la IP de la VM de minikube con:
+>> minikube ip
+
+Y posteriormente hacer SSH a dicha IP a través del puerto especificado en nodePort:
+>> ssh -p <nodePort> <usuario>@<minikube_ip>
+
+3. Montando el tunel de minikube.
+También puedes montar un tunel con:
+>> minikube tunnel
+
+Y de este modo podremos hacer SSH al Service creado:
+>> ssh <usuario>@<service_ip>

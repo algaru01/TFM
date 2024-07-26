@@ -93,7 +93,7 @@
     "nfsVolume": {
       "description": "NFS shared volume for frontend and workers.",
       "type": "object",
-      "required": ["server", "path"],
+      "required": ["server", "basePath"],
       "properties": {
 
         "server": {
@@ -102,8 +102,8 @@
           "format": "ipv4"
         },
 
-        "path": {
-          "description": "Path for the directory where NFS is mounted.",
+        "basePath": {
+          "description": "Base path for the directory where NFS is mounted.",
           "type": "string"
         }
       }
