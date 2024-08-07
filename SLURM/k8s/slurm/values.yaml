@@ -12,13 +12,14 @@ workers:
 # db node values
 db:
   enabled: false
-  hostname: db-node
-  slurmdbdPort: 6819
-  mySqlPassword: password
+  hostname: db-node         # Not needed if enabled is false
+  slurmdbdPort: 6819        # Not needed if enabled is false
+  mySqlPassword: password   # Not needed if enabled is false
 
-nfsVolume:
-  server: 192.168.1.142
-  basePath: "/mnt/nfs_tfm/slurm"
+nfs:
+  useLocal: true
+  server: 192.168.1.142           # Not needed if useLocal is true
+  basePath: "/mnt/nfs_tfm/slurm"  # Not needed if useLocal is true
 
 users:
   - username: test

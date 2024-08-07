@@ -13,7 +13,7 @@ test:
 	@echo "${GREEN}>> Show  information  about Slurm nodes and partitions.${NC}"
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- sinfo
 
-	@echo "${GREEN}>> Make 3 nodes print a simple hello world.${NC}"
+	@echo "${GREEN}>> Make 3 nodes print its hostname.${NC}"
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- sh -c 'printf "#!/bin/bash\n#SBATCH --job-name=test_job\n#SBATCH --output=/home/test/test_job.out\n#SBATCH --ntasks=3\n#SBATCH --time=00:01:00\n\n srun hostname \n" > prueba.sh'
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- sbatch prueba.sh
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- squeue
@@ -28,5 +28,5 @@ test:
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- sh -c 'printf "#!/bin/bash\n#SBATCH --job-name=test_job_mpi\n#SBATCH --output=/home/test/test_job_mpi.out\n#SBATCH --ntasks=3\n#SBATCH --time=00:01:00\n\n srun /home/test/hello \n" > prueba_mpi.sh'
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- sbatch prueba_mpi.sh
 	@echo "${BLUE}>> Print result.${NC}"
-	sleep 3
+	sleep 5
 	kubectl exec ${POD_FRONTEND} ${CONTAINER_FRONTEND} -- cat /home/test/test_job_mpi.out

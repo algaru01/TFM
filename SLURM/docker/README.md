@@ -4,9 +4,11 @@ This folder contains Docker images to create a *Multi-container Slurm Cluster*.
 
 ---
 
-Specifically, this will create two types of containers:
+Specifically, this will create three types of containers:
 * *Head Node*. Node running the *slurmctld* daemon that manages jobs.
 * *Compute Node*. Node running the *slurmd* daemon that executes jobs.
+* *Database Node*. Node running the *slurmdbd* daemon for accounting jobs.
+* *NFS Node*. Node running a NFS server in case you need it.
 
 ## Folder Structure
 ### `dockerfile/`
@@ -14,13 +16,16 @@ Contains all the Dockerfiles and files needed to create the Docker Images.
 
 Firstly, it creates a base Debian Slurm image with all common tools like `munge` or `slurm` and other debugging programs.
 
-From this base image, it then creates a specific image for each type of node, i.e. one for the `Compute Node` and one for the `Head Node`.
+From this base image, it then creates a specific image for each type of node except for the NFS.
+
+The NFS node creates its own image from a simple Debian one.
 
 ### `Makefile`
 Makefile given to automate image building and testing.
 
 ### `docker-compose.yaml`
-It creates a `head-node` with two `compute-node`.
+It creates a `head-node`, two `compute-node`, one `database-node` and one `nfs-node`.
+It also creates its own network and a volume for the shared
 
 ## Building Images
 A Makefile has been made to make it easier to build and test images.
@@ -84,13 +89,15 @@ Create a script with the following.
 ``` prueba.sh
 #!/bin/bash
 #SBATCH --job-name=test_job
-#SBATCH --output=test_job_output.txt
-#SBATCH --ntasks=1
+#SBATCH --output=/mnt/shared/test_job_output.txt
+#SBATCH --ntasks=2
 #SBATCH --time=00:01:00
 
-echo "Hola, mundo!"
+srun hostname
 ```
-And launch it.
+This will make two nodes print its hostname and store it in a shared volume.
+
+Launch it with:
 ```
 sbatch <script>
 ```
@@ -98,6 +105,11 @@ sbatch <script>
 You can check the queues.
 ```
 squeue
+```
+
+You can test the accounting with:
+```
+sacct
 ```
 
 ## Troubleshooting

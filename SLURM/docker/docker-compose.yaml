@@ -1,37 +1,86 @@
 version: "3.8"
 
+volumes:
+  mynfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.20.0.10,vers=4,soft
+      device: ":"
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
 services:
+
+  nfs-node:
+    image: nfs-server
+    container_name: nfs-server-node
+    hostname: linux-nfs
+    privileged: true
+    networks:
+      internal:
+        ipv4_address: 172.20.0.10
 
   head-node:
     image: debian-slurm-hn:latest
     container_name: slurm-head-node
     hostname: linux-hn
+    networks:
+      internal:
+        ipv4_address: 172.20.0.2
+    volumes:
+      - mynfs:/mnt/shared
     expose:
       - "6817"
     depends_on:
+      - "nfs-node"
       - "db-node"
 
-  # compute-node1:
-  #   image: debian-slurm-cn:latest
-  #   container_name: slurm-compute-node1
-  #   hostname: linux-1
-  #   expose:
-  #     - "6818"
-  #   depends_on:
-  #     - "head-node"
+  compute-node1:
+    image: debian-slurm-cn:latest
+    container_name: slurm-compute-node1
+    hostname: linux-1
+    networks:
+      internal:
+        ipv4_address: 172.20.0.3
+    volumes:
+      - mynfs:/mnt/shared
+    expose:
+      - "6818"
+    depends_on:
+      - "nfs-node"
+      - "head-node"
 
-  # compute-node2:
-  #   image: debian-slurm-cn:latest
-  #   container_name: slurm-compute-node2
-  #   hostname: linux-2
-  #   expose:
-  #     - "6818"
-  #   depends_on:
-  #     - "head-node"
+  compute-node2:
+    image: debian-slurm-cn:latest
+    container_name: slurm-compute-node2
+    hostname: linux-2
+    networks:
+      internal:
+        ipv4_address: 172.20.0.4
+    volumes:
+      - mynfs:/mnt/shared
+    expose:
+      - "6818"
+    depends_on:
+      - "nfs-node"
+      - "head-node"
 
   db-node:
     image: debian-slurm-db:latest
     container_name: slurm-db-node
     hostname: linux-db
+    command: ["/bin/bash"]
+    privileged: true
+    networks:
+      internal:
+        ipv4_address: 172.20.0.20
     expose:
       - "6819"
+    depends_on:
+      - "nfs-node"

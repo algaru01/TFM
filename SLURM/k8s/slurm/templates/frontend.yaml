@@ -8,6 +8,17 @@ spec:
   hostname: {{ include "slurm.frontend.hostname" . }}
 
   initContainers:
+  {{- if .Values.nfs.useLocal }}
+  - name: wait-for-nfs
+    image: busybox
+    command: ["sh","-c"]
+    args: ["until nc -zv nfs-port 2049;
+            do
+              echo '-- nfs node (nfs-port) is not available.  Sleeping ...';
+              sleep 5;
+            done"]
+  {{- end }}
+
   {{- if .Values.db.enabled }}
   - name: wait-for-db
     image: busybox
@@ -18,6 +29,7 @@ spec:
               sleep 5;
             done"] 
   {{- end }}
+
   {{- if .Values.users }}
   - name: users-home-dir
     image: busybox
@@ -37,6 +49,8 @@ spec:
   containers:
     - name: frontend
       image: agalrui/debian-slurm-hn
+      # securityContext:
+      #   privileged: true
       # command: ["tail", "-f", "/dev/null"]
       command: ["/bin/sh", "/tmp/startup/startup-hn.sh"]
 

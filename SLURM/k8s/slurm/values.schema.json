@@ -2,22 +2,18 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Values",
   "type": "object",
-  "required": [ "frontend", "workers", "db", "nfsVolume" ],
-
+  "required": ["frontend", "workers", "db", "nfs"],
   "properties": {
-
     "frontend": {
       "description": "Head Node values",
       "type": "object",
-      "required": [ "hostname", "slurmctldPort" ],
+      "required": ["hostname", "slurmctldPort"],
       "properties": {
-
         "hostname": {
           "description": "Hostname for head node. (Chart name will be added)",
           "type": "string",
           "examples": ["<chartName>-frontend"]
         },
-
         "slurmctldPort": {
           "description": "Port used for slurmctld demon (communication with compute node).",
           "type": "integer",
@@ -27,19 +23,16 @@
         }
       }
     },
-
     "workers": {
       "description": "Compute Nodes values",
       "type": "object",
       "required": ["baseHostname", "slurmdPort", "numReplicas"],
       "properties": {
-
         "baseHostname": {
           "description": "Base name used to create complete hostname when added number of replica. (Chart name will be added)",
           "type": "string",
           "examples": ["<chartName>-worker-<replicaID>"]
         },
-
         "slurmdPort": {
           "description": "Port used for slurmd demon (communication with head node).",
           "type": "integer",
@@ -47,7 +40,6 @@
           "maximum": 49151,
           "default": 6818
         },
-
         "numReplicas": {
           "description": "Number of compute node replicas.",
           "type": "integer",
@@ -56,24 +48,20 @@
         }
       }
     },
-
     "db": {
       "description": "DB Node values",
       "type": "object",
-      "required": ["enabled", "hostname", "slurmdbdPort", "mySqlPassword"],
+      "required": ["enabled"],
       "properties": {
-
         "enabled": {
           "description": "Choose whether to enable a Database for accounting.",
           "type": "boolean"
         },
-
         "hostname": {
           "description": "Base name used to create complete hostname when added number of replica. (Chart name will be added)",
           "type": "string",
           "examples": ["<chartName>-db"]
         },
-
         "slurmdbdPort": {
           "description": "Port used for slurmdbd demon (communication with other nodes).",
           "type": "integer",
@@ -81,31 +69,57 @@
           "maximum": 49151,
           "default": 6819
         },
-
         "mySqlPassword": {
           "description": "Password for the mysql database.",
           "type": "string",
           "default": "password"
         }
+      },
+      "if": {
+        "properties": {
+          "enabled": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": ["hostname", "slurmdbdPort", "mySqlPassword"]
+      },
+      "else": {
+        "required": []
       }
     },
-
-    "nfsVolume": {
+    "nfs": {
       "description": "NFS shared volume for frontend and workers.",
       "type": "object",
-      "required": ["server", "basePath"],
+      "required": ["useLocal"],
       "properties": {
-
         "server": {
           "description": "IP for the NFS server.",
           "type": "string",
           "format": "ipv4"
         },
-
         "basePath": {
           "description": "Base path for the directory where NFS is mounted.",
           "type": "string"
+        },
+        "useLocal": {
+          "description": "Choose whether to enable a Database for accounting.",
+          "type": "boolean"
         }
+      },
+      "if": {
+        "properties": {
+          "useLocal": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": ["server", "basePath"]
+      },
+      "else": {
+        "required": []
       }
     }
   }

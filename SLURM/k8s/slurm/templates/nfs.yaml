@@ -1,0 +1,142 @@
+###################################
+#           LOCAL NFS POD         #
+###################################
+{{- if .Values.nfs.useLocal }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-nfs
+  labels:
+    type: nfs-node
+spec:
+  hostname: {{ .Release.Name }}-nfs
+  terminationGracePeriodSeconds: 60 # container[0].lifecycle.preStop will wait 30 seconds(other pod's graceful time) after they are unreachable. So setting this greater will assure us that it finishs last.
+
+
+  initContainers:
+  - name: create-user-dirs
+    image: busybox
+    command: ["sh", "-c"]
+    args:
+    - |
+      {{- range $index, $user := .Values.users }}
+      mkdir /nfs_share/user_home_dir_{{ $index }}
+      {{- end }}
+    volumeMounts:
+    - name: shared-vol
+      mountPath: /nfs_share
+  
+  containers:
+    - name: nfs
+      image: agalrui/nfs-server
+      securityContext:
+        capabilities:
+          add: ["SYS_ADMIN", "SETPCAP"]
+      volumeMounts:
+        - name: shared-vol
+          mountPath: /nfs_share
+      
+      # Check other pods are terminated before deleting NFS with shared dirs so they do not get stuck
+      lifecycle:
+        preStop:
+          exec:
+            command: ["sh", "-c", "sleep 30"]
+            # - sh
+            # - -c
+            # - |
+            #   PODS_LIST=(
+            #     "{{ include "slurm.frontend.hostname" . }}"
+            #     {{- range $i, $e := until ( int .Values.workers.numReplicas) }}
+            #     "{{ include "slurm.workers.baseHostname" $ }}-{{ $i }}.{{ $.Release.Name }}-workers-service"
+            #     {{- end }}
+            #   )
+            #   for pod in ${PODS_LIST[@]}; do
+            #     while ping -c 1 $pod > /dev/null; do
+            #       sleep 1
+            #     done
+            #   done 
+            #   sleep 30
+
+
+  volumes:
+    - name: shared-vol
+      emptyDir: {}
+---
+
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: {{ .Release.Name }}-slurm-conf
+# data:
+#   prestop.sh: |
+
+# ---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfs-port
+spec:
+  clusterIP: 10.96.11.51 # Using headless service beacause local nfs server in a pod does not work with minikube as minikube VM cannot resolve its DNS.
+  selector:
+    type: nfs-node
+  ports:
+    - name: listen
+      port: 2049
+      targetPort: 2049
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+immutable: true
+data:
+  password: {{ .Values.db.mySqlPassword | b64enc }}
+
+{{- end }}
+
+#####################################################
+
+
+{{- range $index, $user := .Values.users }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-users-{{ $user.username }}
+spec:
+  capacity:
+    storage: 50Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete #Recycle?
+  storageClassName: nfs-subdir
+  mountOptions:
+    - vers=4
+  nfs:
+    {{- if $.Values.nfs.useLocal }}
+    server: 10.96.11.51
+    path: /user_home_dir_{{ $index }}
+    {{- else }}
+    server: {{ $.Values.nfs.server }}
+    path: {{ $.Values.nfs.basePath }}/user_home_dir_{{ $index }}
+    {{- end }}
+    readOnly: false
+---
+{{- end }}
+
+{{- range .Values.users }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-users-{{ .username }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nfs-subdir
+  resources:
+    requests:
+      storage: 50Mi
+---
+{{- end }}

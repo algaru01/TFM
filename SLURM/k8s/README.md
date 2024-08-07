@@ -32,7 +32,7 @@ helm uninstall slurm-cluster
 ```
 
 ## Debug
-You can debug your resulting manifiestos using given `Makefile`:
+You can debug your resulting manifiestos by using the given `Makefile`:
 ```
 make template
 ```

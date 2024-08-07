@@ -6,6 +6,7 @@ It defines some templates to be used in other YAML files. For example to automiz
 
 ## `frontend.yaml`
 It creates a `head-node` `pod`.
+* If local NFS is enabled, it creates a `initContainer` that will wait until *nfsd* is ready.
 * If DB is enabled, it creates a `initContainer` that will wait until *slurmdbd* is ready.
 * If there are any user, it creates a `init container` that will change the permissions of their home directories.
 * Then, it will run a `debian-slurm-hn` image created in `docker/`. This mounts three volumes:
@@ -43,13 +44,13 @@ It also uses a `secret` form `slurm-config
 Finally, we use again a `Service` for communication with the rest of *Slurm daemons*.
 
 ## `slurm-config.yaml`
-It contains all configuraton files required for automatization:
+It contains all the configuraton files required for automatization:
 * **slurm.conf**. General configuration of Slurm. Used in all nodes.
 * **slurmdb.conf**. If DB is enabled, configuration for *slurmdbd*. Used in *db-node*.
 * **cgroup.conf**. Configuration of *cgroup plugin*. Used in *compute-nodes*.
 
 ## `users.yaml`
-It contains all configuration files required for keeping track of the cluster users.
+It contains all the configuration files required to keep track of the cluster users.
 * **passwd**. File with users in system. It will automatically add users specified as Helm values.
 * **group**. File with groups in system. It will automatically add user groups specified as Helm values.
 * **shadow**. File with users passwords. It will automatically add users passwords specified as Helm values.
@@ -58,7 +59,14 @@ It contains all configuration files required for keeping track of the cluster us
 ## `startup.yaml`
 Startup scripts for all nodes.
 
-## `volume.yaml`
+## `nfs.yaml`
 It creates one `PersistentVolume` and `PersistentVolumeClaim` per user specified as Helm value for the NFS.
-It requires that the NFS already has a directory created for each user as `<NFS_dir>/user_home_dir_<number>`.
+
+* In case the use of local NFS is enabled, it will create a pod that mounts the NFS server used by other nodes.
+    * It creates firstly a `initContainer` that creates each user directory.
+    * Then it run a `nfs-server` image created in `docker/`.
+    * Lastly, it will wait 30 seconds before terminating. This is done to ensure that no other pod using this NFS server finishes before it, as they would get stuck in a terminating state.
+    * This pod requires some special capabilities, which may actually pose a small security risk. However, this is still a good way for testing.
+
+* In case any other NFS server is provided, it must already have a directory created for each user as `<NFS_dir>/user_home_dir_<number>`.
 

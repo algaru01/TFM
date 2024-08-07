@@ -10,6 +10,9 @@ RUN apt-get update
 # Install tools for debugging
 RUN apt-get install -y procps vim net-tools hostname iputils-ping dnsutils
 
+# Install tools for mounting NFS
+RUN apt install -y nfs-common
+
 RUN apt-get install -y sudo openssh-server openssh-client
 
 RUN mkdir /var/run/sshd
