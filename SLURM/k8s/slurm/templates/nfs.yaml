@@ -77,23 +77,13 @@ kind: Service
 metadata:
   name: nfs-port
 spec:
-  clusterIP: 10.96.11.51 # Using headless service beacause local nfs server in a pod does not work with minikube as minikube VM cannot resolve its DNS.
+  clusterIP: 10.96.11.51 # Using headless service because local nfs server in a pod does not work with minikube (as minikube VM cannot resolve its domain name).
   selector:
     type: nfs-node
   ports:
     - name: listen
       port: 2049
       targetPort: 2049
----
-
-apiVersion: v1
-kind: Secret
-metadata:
-  name: mysql-secret
-type: Opaque
-immutable: true
-data:
-  password: {{ .Values.db.mySqlPassword | b64enc }}
 
 {{- end }}
 
