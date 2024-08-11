@@ -8,12 +8,39 @@ spec:
   securityContext:
     fsGroup: 1000
   initContainers:
+    {{- if .Values.nfs.useLocal }}
+    - name: wait-for-nfs
+      image: busybox
+      command: ["sh","-c"]
+      args: ["until nc -zv nfs-service 2049;
+              do
+                echo '-- nfs node (nfs-service) is not available.  Sleeping ...';
+                sleep 5;
+              done"]
+    {{- end }}
+
     - name: volume-mount-hack
       image: busybox
-      command: ["sh", "-c", "chown -R 1000:1000 /home/jupyter/my-nfs"]
+      command: ["sh", "-c", "chown -R 1000:1000 /home/jupyter/jupyter_shared"]
       volumeMounts:
-        - name: nfs
-          mountPath: "/home/jupyter/my-nfs"
+        - name: nfs-jupyter
+          mountPath: "/home/jupyter/jupyter_shared"
+
+    {{- if .Values.users }}
+    - name: users-home-dir
+      image: busybox
+      command: ["sh", "-c"]
+      args:
+      - |
+        {{- range $index, $user := .Values.users }}
+        chown -R {{ add 1100 $index }}:{{ add 1100 $index }} /home/{{ $user.username }}
+        {{- end }}
+      volumeMounts:
+      {{- range .Values.users }}
+      - name: nfs-users-{{ .username }}
+        mountPath: /home/{{ .username }}
+      {{- end }}
+    {{- end }}
 
   hostname: {{ .Values.frontend.hostname }}
 
@@ -25,16 +52,44 @@ spec:
     volumeMounts:
     - name: frontend-volume
       mountPath: /home/jupyter/config
+
+    - name: config-users-volume
+      mountPath: /etc/passwd
+      subPath: passwd
+    - name: config-users-volume
+      mountPath: /etc/shadow
+      subPath: shadow
+    - name: config-users-volume
+      mountPath: /etc/group
+      subPath: group
+    - name: config-users-volume
+      mountPath: /etc/gshadow
+      subPath: gshadow
+
+    {{- range .Values.users }}
+    - name: nfs-users-{{ .username }}
+      mountPath: /home/{{ .username }}
+    {{- end }}
   
-    - name: nfs
-      mountPath: "/home/jupyter/my-nfs"
+    - name: nfs-jupyter
+      mountPath: "/home/jupyter/jupyter_shared"
       readOnly: false
 
   volumes:
-
-    - name: nfs
+    {{- range .Values.users }}
+    - name: nfs-users-{{ .username }}
       persistentVolumeClaim:
-        claimName: nfs-pvc
+        claimName: pvc-users-{{ .username }}
+    {{- end }}
+
+    - name: nfs-jupyter
+      persistentVolumeClaim:
+        claimName: pvc-jupyter
+
+    - name: config-users-volume
+      configMap:
+        defaultMode: 0777
+        name: {{ .Release.Name }}-users-config
 
     - name: frontend-volume
       configMap:
@@ -91,4 +146,19 @@ spec:
             name: {{ .Release.Name }}-frontend-service  # Nombre del servicio que quieres exponer
             port:
               number: {{ .Values.frontend.jupyterServerPort }}  # Puerto del servicio Jupyter
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ssh-service
+spec:
+  type: NodePort
+  selector:
+    type: head-node
+  ports:
+    - port: 22
+      targetPort: 22
+      nodePort: 30022
 

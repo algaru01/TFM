@@ -1,6 +1,6 @@
 import ipyparallel as ipp
 
-c = ipp.Client("/home/jupyter/my-nfs/ipcontroller-client.json")
+c = ipp.Client("/home/jupyter/jupyter_shared/ipcontroller-client.json")
 print(c.ids)
 print(c[:].apply_sync(lambda: "Hello, World"))
 

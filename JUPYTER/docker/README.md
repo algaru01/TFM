@@ -7,6 +7,7 @@ This folder contains Docker images to create a *Multi-container Jupyter IPython 
 Specifically, this will create two types of containers:
 * *Frontend Node*. Node running the *ipcontroller* that manages works. Created with a *pod*.
 * *Worker Node*. Several nodes running the *ipengine* that executes works. Created with a *deployment*
+* *NFS Node*. Node running a NFS server in case you need it.
 
 ## Folder Structure
 ### `dockerfile/`
@@ -16,11 +17,13 @@ Firstly, it creates a base Debian Ipython image with all common tools like `jupy
 
 From this base image, it then creates a specific image for each type of node, i.e. one for the *Frontend Node* and one for the *Worker Node*.
 
+The NFS node creates its own image from a simple Debian one.
+
 ### `Makefile`
 Makefile given to automate image building and testing.
 
 ### `docker-compose.yaml`
-It creates a `head-node` with two `compute-node`.
+It creates a `head-node` with two `compute-node` and a `nfs-node`.
 
 ## Building Images
 A Makefile has been made to make it easier to build and test images.
@@ -78,7 +81,6 @@ In case you are only testing the docker images either by using the Makefile or w
 Check if `ipcontroller` has been launched correctly.
 
 In case it did not, launch it manually by getting the IP and executing.
-Get the IP.
 ```
 ip -f inet -br addr show dev eth0
 ```

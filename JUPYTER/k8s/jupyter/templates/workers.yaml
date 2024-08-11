@@ -12,6 +12,32 @@ spec:
       labels:
         type: worker-node
     spec:
+      initContainers:
+        {{- if .Values.nfs.useLocal }}
+        - name: wait-for-nfs
+          image: busybox
+          command: ["sh","-c"]
+          args:
+          - |
+            until nc -zv nfs-service 2049;
+            do
+              echo '-- nfs node (nfs-service) is not available. Sleeping ...';
+              sleep 5;
+            done
+        {{- end }}
+        - name: wait-for-frontend
+          image: busybox
+          command: ["sh","-c"]
+          args: 
+          - |
+            while [ ! -f /home/jupyter/jupyter_shared/ipcontroller-engine.json ]; do
+              echo "-- 'ipcontroller-engine.json' file does not exist yet. Sleeping..."
+              sleep 5;
+            done
+          volumeMounts:
+            - name: nfs-jupyter
+              mountPath: "/home/jupyter/jupyter_shared"
+              readOnly: false
       containers:
       - name: worker
         image: agalrui/debian-ipython-wn
@@ -22,9 +48,27 @@ spec:
         - name: worker-volumen
           mountPath: /home/jupyter/config
 
-        - name: nfs
-          mountPath: "/home/jupyter/my-nfs"
+        - name: nfs-jupyter
+          mountPath: "/home/jupyter/jupyter_shared"
           readOnly: false
+
+        - name: config-users-volume
+          mountPath: /etc/passwd
+          subPath: passwd
+        - name: config-users-volume
+          mountPath: /etc/shadow
+          subPath: shadow
+        - name: config-users-volume
+          mountPath: /etc/group
+          subPath: group
+        - name: config-users-volume
+          mountPath: /etc/gshadow
+          subPath: gshadow
+
+        {{- range .Values.users }}
+        - name: nfs-users-{{ .username }}
+          mountPath: /home/{{ .username }}
+        {{- end }}
 
       volumes:
         - name: worker-volumen
@@ -34,6 +78,17 @@ spec:
               - key: ipengine_config.py
                 path: ipengine_config.py
             
-        - name: nfs
+        - name: nfs-jupyter
           persistentVolumeClaim:
-            claimName: nfs-pvc
+            claimName: pvc-jupyter
+
+        {{- range .Values.users }}
+        - name: nfs-users-{{ .username }}
+          persistentVolumeClaim:
+            claimName: pvc-users-{{ .username }}
+        {{- end }}
+
+        - name: config-users-volume
+          configMap:
+            defaultMode: 0777
+            name: {{ .Release.Name }}-users-config

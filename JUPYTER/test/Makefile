@@ -11,8 +11,8 @@ TOKEN=$(shell kubectl logs ${FRONTEND_NAME} | grep -o 'token=[a-f0-9]*' | head -
 
 test:
 	@echo "${GREEN}>> Test a Python file that prints workers IDs and makes them exec a "Hello World".${NC}"
-	kubectl cp test.py ${FRONTEND_NAME}:/home/jupyter/test.py
-	kubectl exec -i ${FRONTEND_NAME} -- python3 /home/jupyter/test.py
+	kubectl cp test.py ${FRONTEND_NAME}:/home/test/test.py
+	kubectl exec -i ${FRONTEND_NAME} -- python3 /home/test/test.py
 
 	@echo "${GREEN}>> Get headers of the Jupyter Notebook Server ${NC}"
 	curl -I "http://$(INGRESS_IP)/tree?token=$(TOKEN)"

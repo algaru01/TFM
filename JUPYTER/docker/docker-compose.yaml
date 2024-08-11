@@ -1,17 +1,54 @@
 version: "3.8"
 
+volumes:
+  mynfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.20.0.10,vers=4,soft
+      device: ":"
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
 services:
+
+  nfs-node:
+    image: nfs-server
+    container_name: nfs-server-node
+    hostname: linux-nfs
+    privileged: true
+    networks:
+      internal:
+        ipv4_address: 172.20.0.10
 
   frontend-node:
     image: debian-ipython-fn:latest
     container_name: jupyter-frontend
+    networks:
+      internal:
+        ipv4_address: 172.20.0.2
+    volumes:
+      - mynfs:/mnt/shared
     ports:
       - "8888:8888"
+    depends_on:
+      - "nfs-node"
 
   worker-node:
     image: debian-ipython-wn:latest
     container_name: jupyter-worker
+    networks:
+      internal:
+        ipv4_address: 172.20.0.3
+    volumes:
+      - mynfs:/mnt/shared
     # deploy:
     #   replicas: 2
     depends_on:
       - "frontend-node"
+      - "nfs-node"

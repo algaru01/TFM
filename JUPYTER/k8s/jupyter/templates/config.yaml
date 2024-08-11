@@ -24,11 +24,11 @@ data:
 
     c.IPController.ip = '*'
 
-    c.IPController.engine_json_file="/home/jupyter/my-nfs/ipcontroller-engine.json"
+    c.IPController.engine_json_file="/home/jupyter/jupyter_shared/ipcontroller-engine.json"
 
     c.IPController.location="{{ .Release.Name }}-frontend-service.default.svc.cluster.local"
 
-    c.IPController.client_json_file="/home/jupyter/my-nfs/ipcontroller-client.json"
+    c.IPController.client_json_file="/home/jupyter/jupyter_shared/ipcontroller-client.json"
 
     c.IPController.ports=[
     {{- range concat .Values.frontend.IPController.enginePorts .Values.frontend.IPController.clientPorts }}
@@ -40,4 +40,4 @@ data:
 
     c = get_config()
 
-    c.IPEngine.url_file="/home/jupyter/my-nfs/ipcontroller-engine.json"
+    c.IPEngine.url_file="/home/jupyter/jupyter_shared/ipcontroller-engine.json"

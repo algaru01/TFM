@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-users-config
+data:
+  passwd: |
+    root:x:0:0:root:/root:/bin/bash
+    daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+    bin:x:2:2:bin:/bin:/usr/sbin/nologin
+    sys:x:3:3:sys:/dev:/usr/sbin/nologin
+    sync:x:4:65534:sync:/bin:/bin/sync
+    games:x:5:60:games:/usr/games:/usr/sbin/nologin
+    man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+    lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+    mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+    news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+    uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+    proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+    www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+    backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+    list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+    irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+    _apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+    nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+    _rpc:x:100:65534::/run/rpcbind:/usr/sbin/nologin
+    statd:x:101:65534::/var/lib/nfs:/usr/sbin/nologin
+    systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+    systemd-timesync:x:997:997:systemd Time Synchronization:/:/usr/sbin/nologin
+    messagebus:x:102:101::/nonexistent:/usr/sbin/nologin
+    sshd:x:103:65534::/run/sshd:/usr/sbin/nologin
+    jupyter:x:1000:1000::/home/jupyter:/bin/bash
+
+    {{- range $index, $user := .Values.users }}
+    {{ $user.username }}:x:{{ add 1100 $index }}:{{ add 1100 $index }}:,,,:/home/{{ $user.username }}:/bin/bash
+    {{- end }}
+
+  group: |
+    root:x:0:
+    daemon:x:1:
+    bin:x:2:
+    sys:x:3:
+    adm:x:4:
+    tty:x:5:
+    disk:x:6:
+    lp:x:7:
+    mail:x:8:
+    news:x:9:
+    uucp:x:10:
+    man:x:12:
+    proxy:x:13:
+    kmem:x:15:
+    dialout:x:20:
+    fax:x:21:
+    voice:x:22:
+    cdrom:x:24:
+    floppy:x:25:
+    tape:x:26:
+    sudo:x:27:
+    audio:x:29:
+    dip:x:30:
+    www-data:x:33:
+    backup:x:34:
+    operator:x:37:
+    list:x:38:
+    irc:x:39:
+    src:x:40:
+    shadow:x:42:
+    utmp:x:43:
+    video:x:44:
+    sasl:x:45:
+    plugdev:x:46:
+    staff:x:50:
+    games:x:60:
+    users:x:100:{{- range .Values.users }} {{ .username }}, {{- end }}
+    nogroup:x:65534:
+    systemd-journal:x:999:
+    systemd-network:x:998:
+    systemd-timesync:x:997:
+    messagebus:x:101:
+    _ssh:x:102:
+    jupyter:x:1000:
+    {{- range $index, $user := .Values.users }}
+    {{ $user.username }}:x:{{ add 1100 $index }};
+    {{- end }}
+
+  shadow: |
+    root:*:19732:0:99999:7:::
+    daemon:*:19732:0:99999:7:::
+    bin:*:19732:0:99999:7:::
+    sys:*:19732:0:99999:7:::
+    sync:*:19732:0:99999:7:::
+    games:*:19732:0:99999:7:::
+    man:*:19732:0:99999:7:::
+    lp:*:19732:0:99999:7:::
+    mail:*:19732:0:99999:7:::
+    news:*:19732:0:99999:7:::
+    uucp:*:19732:0:99999:7:::
+    proxy:*:19732:0:99999:7:::
+    www-data:*:19732:0:99999:7:::
+    backup:*:19732:0:99999:7:::
+    list:*:19732:0:99999:7:::
+    irc:*:19732:0:99999:7:::
+    _apt:*:19732:0:99999:7:::
+    nobody:*:19732:0:99999:7:::
+    _rpc:!:19944::::::
+    statd:!:19944::::::
+    systemd-network:!*:19944::::::
+    systemd-timesync:!*:19944::::::
+    messagebus:!:19944::::::
+    sshd:!:19944::::::
+    jupyter:!:19944:0:99999:7:::
+    {{- range .Values.users }}
+    {{ .username }}:{{ .password }}:19928:0:99999:7:::
+    {{- end }}
+  gshadow: |
+
+    root:*::
+    daemon:*::
+    bin:*::
+    sys:*::
+    adm:*::
+    tty:*::
+    disk:*::
+    lp:*::
+    mail:*::
+    news:*::
+    uucp:*::
+    man:*::
+    proxy:*::
+    kmem:*::
+    dialout:*::
+    fax:*::
+    voice:*::
+    cdrom:*::
+    floppy:*::
+    tape:*::
+    sudo:*::
+    audio:*::
+    dip:*::
+    www-data:*::
+    backup:*::
+    operator:*::
+    list:*::
+    irc:*::
+    src:*::
+    shadow:*::
+    utmp:*::
+    video:*::
+    sasl:*::
+    plugdev:*::
+    staff:*::
+    games:*::
+    users:*::{{- range .Values.users }} {{ .username }}, {{- end }}
+    nogroup:*::
+    systemd-journal:!*::
+    systemd-network:!*::
+    systemd-timesync:!*::
+    messagebus:!::
+    _ssh:!::
+    jupyter:!::
+    {{- range $index, $user := .Values.users }}
+    {{ $user.username }}:!::
+    {{- end }}
+  user1: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/X+atS0DdeQa54tdFTTe206VA2N7PckLfgAG/0K0FMhFiyqNJfwgwqmdUtO/Has64A800eEU7jh01BIed+MJPGhPbyK0gg6/5n0cXvk81Ym1V0Eto9Mjt2CaRh5Gju9qm+01WjjGuurcqc9+bhaSv6G8qjHGFOfkVjtqvVrmUvILY4yGEdOqxzkvd9PVJgmbxKULR3ulD+sYV4NNFyrkPdadJu/1KZivaLfcgDKmi0cm6mJ36ET/ikswfAWnYlHV6VTxK1DB6RRLVZWQFkIzeyMyPl180n0AQnL60Mq/xWHYJzxhpj+phOrNTaqZdhHx/XI+hUCFLxaWy2rurEyq5Nfgrdewhc1HBmo0XNCaYhtdf8J6EKD95I4adPLkUUN+8G5iCGiDNGwpqN4q7vhRkfZlcyYwxvd36r4lrnvos/tZGXoPB6hiMaJV2sBrjdw8MQvrnyIXlrI5AHimG026g6UW96m7nYc/lacgc73ES8oq6PEksiz1Py8M4/OkGbs0= alejandro@alejandro-laptop

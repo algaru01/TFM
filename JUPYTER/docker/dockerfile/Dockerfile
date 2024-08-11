@@ -7,6 +7,15 @@ RUN apt-get update && \
 # Install tools for debugging
 RUN apt-get install -y iproute2 iputils-ping vim procps curl telnet
 
+# Install tools for mounting NFS
+RUN apt install -y nfs-common
+
+RUN apt-get update
+
+RUN apt-get install -y sudo openssh-server openssh-client
+
+RUN mkdir /var/run/sshd
+
 # Install ipyparallel
 RUN pip install --break-system-packages ipyparallel
 

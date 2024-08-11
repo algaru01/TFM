@@ -53,6 +53,15 @@ workers:
   baseHostname: worker
   numReplicas: 2
 
-nfsVolume:
-  server: 192.168.1.158
-  path: "/mnt/nfs_tfm/"
+nfs:
+  useLocal: true
+  server: #192.168.1.142           # Not needed if useLocal is true
+  basePath: #"/mnt/nfs_tfm/jupyter"  # Not needed if useLocal is true
+
+users:
+  - username: test
+    password: $6$5vOSBWhLiy78PwQ7$lyeJUp8F50IYJ0RjLVIfRYjPYffDGludEJf0wNITeCSgflVDhUc7Ho35m5PVl8dlno4kOqxYCafXJsT.STyWQ. #test
+  - username: juan
+    password: $6$sgH.CvbmRsXExWHL$kNv1POAJd8jzQY3OJ5DunXNVXzpJpCmMT60HxbTnfYfLPTf16ZcaQx4/e1yTth8w5HnG83l/iV8tLeN6lcGpf. #juan
+  - username: pedro
+    password: $6$edBhu1vMm7ZE3Fov$Q0reW6uZSOoSfe.eMlgOLhKO8qPZmkTZGbCBTewFuie8JwRWnGXEqg9BgTxDSB1iKqerJi8c.8WqXDQmFcHWI0 #pedro
