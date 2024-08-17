@@ -2,4 +2,4 @@
 
 c = get_config()
 
-# c.IPEngine.url_file="/mnt/shared_storage/ipcontroller-engine.json"
+c.IPEngine.url_file="/mnt/shared_storage/ipcontroller-engine.json"

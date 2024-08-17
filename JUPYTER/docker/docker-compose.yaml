@@ -33,7 +33,7 @@ services:
       internal:
         ipv4_address: 172.20.0.2
     volumes:
-      - mynfs:/mnt/shared
+      - mynfs:/mnt/shared_storage
     ports:
       - "8888:8888"
     depends_on:
@@ -46,7 +46,7 @@ services:
       internal:
         ipv4_address: 172.20.0.3
     volumes:
-      - mynfs:/mnt/shared
+      - mynfs:/mnt/shared_storage
     # deploy:
     #   replicas: 2
     depends_on:

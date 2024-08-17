@@ -4,7 +4,7 @@
 
 c.IPController.ip = '*'
 
-# c.IPController.engine_json_file="/mnt/shared_storage/ipcontroller-engine.json"
+c.IPController.engine_json_file="/mnt/shared_storage/ipcontroller-engine.json"
 
 # c.IPController.location="jupyter-cluster-frontend-service.default.svc.cluster.local"
 

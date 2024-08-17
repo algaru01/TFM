@@ -1,19 +1,16 @@
-# Usa la imagen base creada previamente
+# Use the previously created image
 FROM debian-ipython:latest
 
 RUN pip install --break-system-packages jupyter
 
-USER jupyter
-
-WORKDIR /home/jupyter
-
-# Crear archivo de configuración para ipyparallel
+# Copy config file for IPControler
 COPY ipcontroller_config.py /home/jupyter/config/ipcontroller_config.py
 
-# Expone el puerto 8888 para acceder a Jupyter Notebook desde fuera del contenedor
+# Expose the port for accesing Jupyter Notebook
 EXPOSE 8888
 
-USER root
+# Install tools for debugging. Uncomment if needed.
+# RUN apt-get update && apt-get install -y iproute2 iputils-ping vim procps curl telnet
 
 COPY docker-entrypoint.sh /tmp/docker-entrypoint.sh
 ENTRYPOINT ["sh", "/tmp/docker-entrypoint.sh"]
