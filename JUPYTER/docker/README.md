@@ -5,8 +5,8 @@ This folder contains Docker images to create a *Multi-container Jupyter IPython 
 ---
 
 Specifically, this will create two types of containers:
-* *Frontend Node*. Node running the *ipcontroller* that manages works. Created with a *pod*.
-* *Worker Node*. Several nodes running the *ipengine* that executes works. Created with a *deployment*
+* *Frontend Node*. Node running the *ipcontroller* that manages works, and the Jupyter Server for user access.
+* *Worker Node*. Several nodes running the *ipengine* that executes works.
 * *NFS Node*. Node running a NFS server in case you need it.
 
 ## Folder Structure

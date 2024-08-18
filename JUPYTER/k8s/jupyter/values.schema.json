@@ -82,6 +82,7 @@
                 "db_class": {
                   "description": "Database class to use",
                   "type": "string",
+                  "enum": ["DictDB", "MongoDB", "SQLiteDB", "NoDB"],
                   "default": "DictDB"
                 }
               }
