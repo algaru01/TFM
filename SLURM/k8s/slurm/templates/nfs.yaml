@@ -19,6 +19,7 @@ spec:
     command: ["sh", "-c"]
     args:
     - |
+      mkdir /nfs_share/jupyter_shared
       {{- range $index, $user := .Values.users }}
       mkdir /nfs_share/user_home_dir_{{ $index }}
       {{- end }}
@@ -41,21 +42,6 @@ spec:
         preStop:
           exec:
             command: ["sh", "-c", "sleep 30"]
-            # - sh
-            # - -c
-            # - |
-            #   PODS_LIST=(
-            #     "{{ include "slurm.frontend.hostname" . }}"
-            #     {{- range $i, $e := until ( int .Values.workers.numReplicas) }}
-            #     "{{ include "slurm.workers.baseHostname" $ }}-{{ $i }}.{{ $.Release.Name }}-workers-service"
-            #     {{- end }}
-            #   )
-            #   for pod in ${PODS_LIST[@]}; do
-            #     while ping -c 1 $pod > /dev/null; do
-            #       sleep 1
-            #     done
-            #   done 
-            #   sleep 30
 
 
   volumes:
@@ -63,19 +49,10 @@ spec:
       emptyDir: {}
 ---
 
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: {{ .Release.Name }}-slurm-conf
-# data:
-#   prestop.sh: |
-
-# ---
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: nfs-port
+  name: nfs-service
 spec:
   clusterIP: 10.96.11.51 # Using headless service because local nfs server in a pod does not work with minikube (as minikube VM cannot resolve its domain name).
   selector:
@@ -84,6 +61,8 @@ spec:
     - name: listen
       port: 2049
       targetPort: 2049
+
+---
 
 {{- end }}
 

@@ -3,26 +3,25 @@
 # En NFSv4 el directorio que pongas commo fsid=0 sera virtualmente el directorio root.
 # Entonces si quieres montarlo tienes que montar directamente el root
 
-# Utilizar una imagen base adecuada, en este caso, Debian
 FROM debian:latest
 
-# Actualizar el sistema e instalar nfs-kernel-server
+ARG SHARED_DIR=/nfs_share
+
+# Install packages needed for launching NFS server
 RUN apt-get update && apt-get install -y nfs-kernel-server
 
-# Install ping in case connection check is needed later with kubernetes
-RUN apt install -y iputils-ping
-
 # Crear el directorio que se compartirá
-RUN mkdir -p /nfs_share
+RUN mkdir -p ${SHARED_DIR}
 
-# Definir el volumen para compartir
-VOLUME /nfs_share
+# Define volume to share
+VOLUME ${SHARED_DIR}
+RUN echo "${SHARED_DIR} *(rw,sync,no_subtree_check,no_root_squash,fsid=0)" > /etc/exports
 
-# Copiar el archivo de configuración exports
-RUN echo "/nfs_share *(rw,sync,no_subtree_check,no_root_squash,fsid=0)" > /etc/exports
-
-# Exponer el puerto NFS
+# Expose NFS port
 EXPOSE 2049 
+
+# Install ping in case connection check is needed later with kubernetes
+RUN apt-get update && apt-get install -y iputils-ping
 
 # Comando para iniciar el servicio NFS
 # CMD ["sh", "-c", "rpcbind && rpc.nfsd && exportfs -rav && rpc.mountd  && tail -f /dev/null"]

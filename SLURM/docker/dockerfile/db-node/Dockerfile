@@ -6,8 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Instalamos mysql-server (https://dev.mysql.com/doc/refman/8.4/en/linux-installation-apt-repo.html)
 RUN wget -P /tmp https://dev.mysql.com/get/mysql-apt-config_${MYSQL_VER}_all.deb
 RUN DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/mysql-apt-config_${MYSQL_VER}_all.deb
-RUN apt-get update
-RUN apt install -y mysql-server
+RUN apt-get update && apt-get install -y mysql-server
 
 # Instalamos los paquetes específicos del SlurmDBD Node (https://slurm.schedmd.com/quickstart_admin.html#debinstall)
 RUN dpkg -i /tmp/slurm-smd_${SLURMVER}-1_amd64.deb && \

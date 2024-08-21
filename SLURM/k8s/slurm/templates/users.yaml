@@ -77,8 +77,8 @@ data:
     systemd-timesync:x:997:
     messagebus:x:101:
     _ssh:x:102:
-    munge:x:1001:
-    slurm:x:1002:
+    munge:x:1001:munge
+    slurm:x:1002:slurm
     rdma:x:103:
     {{- range $index, $user := .Values.users }}
     {{ $user.username }}:x:{{ add 1100 $index }};
@@ -156,8 +156,8 @@ data:
     systemd-timesync:!*::
     messagebus:!::
     _ssh:!::
-    munge:!::
-    slurm:!::
+    munge:!::munge
+    slurm:!::slurm
     rdma:!::
     {{- range $index, $user := .Values.users }}
     {{ $user.username }}:!::

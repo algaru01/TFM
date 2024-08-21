@@ -4,7 +4,7 @@ echo "---> Starting the Secure Shell daemon (sshd)  ..."
     /usr/sbin/sshd
 
 echo "---> Starting the MUNGE Authentication service (munged) ..."
-    sudo -u munge /etc/init.d/munge start
+    gosu munge /etc/init.d/munge start
 
 echo "---> Starting the mysql-server daemon (mysqld) ..."
     mysqld --user=mysql &
@@ -23,6 +23,6 @@ mysql -e "FLUSH PRIVILEGES;"
 mysql -e "CREATE DATABASE slurm_acct_db;"
 
 echo "--> Starting the slurm database daemon (slurmdbd) ..."
-    sudo -u slurm slurmdbd -Dvvv
+    gosu slurm slurmdbd -Dvvv
 
 bash

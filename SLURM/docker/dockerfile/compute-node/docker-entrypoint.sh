@@ -6,7 +6,7 @@ echo "---> Starting the Secure Shell daemon (sshd)  ..."
     /usr/sbin/sshd
 
 echo "---> Starting the MUNGE Authentication service (munged) ..."
-    sudo -u munge /etc/init.d/munge start
+    gosu munge /etc/init.d/munge start
 
 echo "---> Waiting for head node (linux-hn) to become active before starting slurmd..."
     until 2>/dev/null >/dev/tcp/linux-hn/6817

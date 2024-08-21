@@ -6,7 +6,7 @@ echo "---> Starting the Secure Shell daemon (sshd)  ..."
     /usr/sbin/sshd
 
 echo "---> Starting the MUNGE Authentication service (munged) ..."
-    sudo -u munge /etc/init.d/munge start
+    gosu munge /etc/init.d/munge start
 
 echo "---> Waiting for db node (linux-db) to become active before starting slurmd..."
     until 2>/dev/null >/dev/tcp/linux-db/6819
@@ -16,7 +16,6 @@ echo "---> Waiting for db node (linux-db) to become active before starting slurm
     done
 
 echo "---> Starting the Slurm Node Daemon (slurmd) ..."
-    exec sudo -u slurm /usr/sbin/slurmctld -Dvvv
-    # tail -f /dev/null
+    exec gosu slurm /usr/sbin/slurmctld -Dvvv
 
 bash

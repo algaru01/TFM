@@ -50,7 +50,7 @@ data:
     SlurmdPort={{ .Values.workers.slurmdPort }}
     SlurmdSpoolDir=/var/spool/slurmd
     SlurmUser=slurm
-    #SlurmdUser=root
+    # SlurmdUser=slurm
     #SrunEpilog=
     #SrunProlog=
     StateSaveLocation=/var/spool/slurmctld

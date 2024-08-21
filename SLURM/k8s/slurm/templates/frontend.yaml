@@ -12,9 +12,9 @@ spec:
   - name: wait-for-nfs
     image: busybox
     command: ["sh","-c"]
-    args: ["until nc -zv nfs-port 2049;
+    args: ["until nc -zv nfs-service 2049;
             do
-              echo '-- nfs node (nfs-port) is not available.  Sleeping ...';
+              echo '-- nfs node (nfs-service) is not available.  Sleeping ...';
               sleep 5;
             done"]
   {{- end }}
