@@ -48,7 +48,7 @@ spec:
 
   containers:
     - name: frontend
-      image: agalrui/debian-slurm-hn
+      image: agalrui/debian-slurm-hn:{{ if .Values.benchmark }}benchmark{{ else }}latest{{ end }}
       # securityContext:
       #   privileged: true
       # command: ["tail", "-f", "/dev/null"]

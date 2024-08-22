@@ -17,8 +17,20 @@ NFS_CONT_NAME = nfs-server-node
 
 NFS_VOL_NAME = mynfs
 
+#### BENCHMARK ####
+
+
+
+###################
+
 all: build start
 
+build_benchmark:
+	docker build -t debian-slurm:benchmark ./dockerfile/benchmark
+
+	docker build --build-arg BASE_IMAGE_TAG=benchmark -t ${HEAD-NODE_IMG}:benchmark	./dockerfile/head-node &
+	docker build --build-arg BASE_IMAGE_TAG=benchmark -t ${COMPUTE-NODE_IMG}:benchmark	./dockerfile/compute-node &
+	docker build --build-arg BASE_IMAGE_TAG=benchmark -t ${DB-NODE_IMG}:benchmark	./dockerfile/db-node
 
 build:
 	docker build -t ${NFS_IMG}:${NFS_IMG_TAG} 					./dockerfile/nfs &
@@ -67,3 +79,13 @@ push:
 
 	docker tag 	${NFS_IMG}:${NFS_IMG_TAG}  agalrui/${NFS_IMG}:${NFS_IMG_TAG}
 	docker push agalrui/${NFS_IMG}:${NFS_IMG_TAG} &
+
+push_benchmark:
+	docker tag 	${HEAD-NODE_IMG}:benchmark  agalrui/${HEAD-NODE_IMG}:benchmark
+	docker push agalrui/${HEAD-NODE_IMG}:benchmark &
+
+	docker tag 	${COMPUTE-NODE_IMG}:benchmark  agalrui/${COMPUTE-NODE_IMG}:benchmark
+	docker push agalrui/${COMPUTE-NODE_IMG}:benchmark &
+
+	docker tag 	${DB-NODE_IMG}:benchmark  agalrui/${DB-NODE_IMG}:benchmark
+	docker push agalrui/${DB-NODE_IMG}:benchmark &

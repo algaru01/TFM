@@ -10,6 +10,8 @@ Specifically, this will create three types of containers:
 * *Database Node*. Node running the *slurmdbd* daemon for accounting jobs.
 * *NFS Node*. Node running a NFS server in case you need it.
 
+Additionally `/dockerfile/benchmark` will create a base image with HPL benchmark. Other nodes can be created from this image so they also have this component installed for testing.
+
 ## Folder Structure
 ### `dockerfile/`
 Contains all the Dockerfiles and files needed to create the Docker Images.

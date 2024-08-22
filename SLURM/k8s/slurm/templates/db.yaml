@@ -24,7 +24,7 @@ spec:
           mountPath: /etc/slurm
   containers:
     - name: db
-      image: agalrui/debian-slurm-db
+      image: agalrui/debian-slurm-db:{{ if .Values.benchmark }}benchmark{{ else }}latest{{ end }}
       # command: ["tail", "-f", "/dev/null"]
       env:
         - name: MYSQL_SLURM_PASSWORD

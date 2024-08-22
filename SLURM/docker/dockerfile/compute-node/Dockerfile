@@ -1,4 +1,6 @@
-FROM debian-slurm:latest
+ARG BASE_IMAGE_TAG=latest
+
+FROM debian-slurm:${BASE_IMAGE_TAG}
 
 # Instalamos los paquetes específicos del Head Node
 RUN dpkg -i /tmp/slurm-smd_${SLURMVER}-1_amd64.deb && \

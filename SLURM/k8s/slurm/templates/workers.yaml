@@ -24,7 +24,7 @@ spec:
                 done"] 
       containers:
         - name: {{ include "slurm.workers.baseHostname" . }}
-          image: agalrui/debian-slurm-cn
+          image: agalrui/debian-slurm-cn:{{ if .Values.benchmark }}benchmark{{ else }}latest{{ end }}
           # command: ["tail", "-f", "/dev/null"] 
           command: ["/bin/sh", "/tmp/startup/startup-cn.sh"]
 

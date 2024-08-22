@@ -158,7 +158,7 @@ data:
     # COMPUTE NODES
     #NodeName=DEFAULT CPUs=1 State=UNKNOWN
     # You can specify a default node and specific nodes
-    NodeName={{ include "slurm.workers.baseHostname" . }}-[0-{{ .Values.workers.numReplicas }}] NodeHostname={{ include "slurm.workers.baseHostname" . }}-[0-{{ .Values.workers.numReplicas }}].{{ include "slurm.workers.service.fqdn" . }} CPUs=1 State=UNKNOWN
+    NodeName={{ include "slurm.workers.baseHostname" . }}-[0-{{ .Values.workers.numReplicas }}] NodeHostname={{ include "slurm.workers.baseHostname" . }}-[0-{{ .Values.workers.numReplicas }}].{{ include "slurm.workers.service.fqdn" . }} CPUs=2 State=UNKNOWN
     PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
     # PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
 

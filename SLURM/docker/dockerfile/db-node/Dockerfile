@@ -1,4 +1,6 @@
-FROM debian-slurm:latest
+ARG BASE_IMAGE_TAG=latest
+
+FROM debian-slurm:${BASE_IMAGE_TAG}
 
 ENV MYSQL_VER=0.8.32-1
 ENV DEBIAN_FRONTEND=noninteractive

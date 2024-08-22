@@ -37,7 +37,7 @@ RUN chown -R munge: /etc/munge/ /var/log/munge/ && \
     chmod 0700 /etc/munge/ /var/log/munge/
 
 # Creamos la clave /etc/munge/munge.key como usuario munge en caso de que no se creara automáticamente
-RUN sudo -u munge /usr/sbin/mungekey --force --verbose
+RUN gosu munge /usr/sbin/mungekey --force --verbose
 
 # 2. INSTALACIÓN DE SLURM
 
