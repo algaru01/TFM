@@ -7,11 +7,11 @@ frontend:
 workers:
   baseHostname: lin
   slurmdPort: 6818 # https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdPort
-  numReplicas: 3
+  numReplicas: 3 # max 25
 
 # db node values
 db:
-  enabled: false
+  enabled: true
   hostname: db-node         # Not needed if enabled is false
   slurmdbdPort: 6819        # Not needed if enabled is false
   mySqlPassword: password   # Not needed if enabled is false
@@ -29,4 +29,4 @@ users:
   - username: pedro
     password: $6$edBhu1vMm7ZE3Fov$Q0reW6uZSOoSfe.eMlgOLhKO8qPZmkTZGbCBTewFuie8JwRWnGXEqg9BgTxDSB1iKqerJi8c.8WqXDQmFcHWI0 #pedro
 
-benchmark: true
+benchmark: false

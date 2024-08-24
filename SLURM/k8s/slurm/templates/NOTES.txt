@@ -5,6 +5,8 @@ Si quieres crear un usuario deberás encriptar la contraseña previamente a un f
 >> openssl passwd -6 <contraseña>
 En este caso -6 significa que usará el algormitmo SHA-512
 
+Finalmente deberás añadirlo mediante un valor de Helm en el archivo values.yaml, de la misma forma que ya está incluido el resto.
+
  -----
 | SSH |
  -----

@@ -162,4 +162,3 @@ data:
     {{- range $index, $user := .Values.users }}
     {{ $user.username }}:!::
     {{- end }}
-  user1: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/X+atS0DdeQa54tdFTTe206VA2N7PckLfgAG/0K0FMhFiyqNJfwgwqmdUtO/Has64A800eEU7jh01BIed+MJPGhPbyK0gg6/5n0cXvk81Ym1V0Eto9Mjt2CaRh5Gju9qm+01WjjGuurcqc9+bhaSv6G8qjHGFOfkVjtqvVrmUvILY4yGEdOqxzkvd9PVJgmbxKULR3ulD+sYV4NNFyrkPdadJu/1KZivaLfcgDKmi0cm6mJ36ET/ikswfAWnYlHV6VTxK1DB6RRLVZWQFkIzeyMyPl180n0AQnL60Mq/xWHYJzxhpj+phOrNTaqZdhHx/XI+hUCFLxaWy2rurEyq5Nfgrdewhc1HBmo0XNCaYhtdf8J6EKD95I4adPLkUUN+8G5iCGiDNGwpqN4q7vhRkfZlcyYwxvd36r4lrnvos/tZGXoPB6hiMaJV2sBrjdw8MQvrnyIXlrI5AHimG026g6UW96m7nYc/lacgc73ES8oq6PEksiz1Py8M4/OkGbs0= alejandro@alejandro-laptop

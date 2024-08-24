@@ -30,7 +30,7 @@ spec:
             done"] 
   {{- end }}
 
-  {{- if .Values.users }}
+  {{- if and .Values.users (not .Values.nfs.useLocal)  }}
   - name: users-home-dir
     image: busybox
     command: ["sh", "-c"]
