@@ -33,6 +33,9 @@ services:
     networks:
       internal:
         ipv4_address: 172.20.0.2
+    environment:
+      - SLURMDBD_HOST=linux-db
+      - SLURMDBD_PORT=6819
     volumes:
       - mynfs:/mnt/shared
     expose:
@@ -45,6 +48,9 @@ services:
     image: debian-slurm-cn:latest
     container_name: slurm-compute-node1
     hostname: linux-1
+    environment:
+      - SLURMD_HOST=linux-hn
+      - SLURMD_PORT=6817
     networks:
       internal:
         ipv4_address: 172.20.0.3
@@ -60,6 +66,9 @@ services:
     image: debian-slurm-cn:latest
     container_name: slurm-compute-node2
     hostname: linux-2
+    environment:
+      - SLURMD_HOST=linux-hn
+      - SLURMD_PORT=6817
     networks:
       internal:
         ipv4_address: 172.20.0.4

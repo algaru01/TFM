@@ -6,69 +6,135 @@ data:
   startup-cn.sh: |
     #!/usr/bin/env bash
 
-    echo "---> Starting the Secure Shell daemon (sshd)  ..."
+    log() {
+
+        echo "---> $1"
+    }
+
+    log_error() {
+
+        echo "ERROR: $1"
+    }
+
+    log "Starting the Secure Shell daemon (sshd)  ..."
         /usr/sbin/sshd
+        if ! pgrep -f sshd > /dev/null; then
+            log_error "SSHD process is not running."
+            exit 1
+        fi
 
-    echo "---> Starting the MUNGE Authentication service (munged) ..."
+    log "Starting the MUNGE Authentication service (munged) ..."
         gosu munge /etc/init.d/munge start
+        if ! pgrep -f munge > /dev/null; then
+            log_error "MUNGE process is not running."
+            exit 1
+        fi
 
-    # echo "---> Waiting for head node ({{ .Values.frontend.hostname }}) to become active before starting slurmd..."
-    #     until 2>/dev/null >/dev/tcp/{{ .Values.frontend.hostname }}/6817
-    #     do
-    #         echo "-- head node ({{ .Values.frontend.hostname }}) is not available.  Sleeping ..."
-    #         sleep 2
-    #     done
-    # echo "-- head node ({{ .Values.frontend.hostname }}) is now active ..."
-
-    echo "---> Starting the Slurm Node Daemon (slurmd) ..."
+    log "Starting the Slurm Node Daemon (slurmd) ..."
         exec /usr/sbin/slurmd -Dvvv
+        if ! pgrep -f slurmd > /dev/null; then
+            log_error "SLURMD process is not running."
+            exit 1
+        fi
 
-    bash
+    log "Worker successfully started"  
+
+    while :; do sleep 2073600 & wait; done
 
   
   startup-hn.sh: |
     #!/usr/bin/env bash
 
-    echo "---> Starting the Secure Shell daemon (sshd)  ..."
+    log() {
+
+        echo "---> $1"
+    }
+
+    log_error() {
+
+        echo "ERROR: $1"
+    }
+
+
+    log "Starting the Secure Shell daemon (sshd)  ..."
         /usr/sbin/sshd
+        if ! pgrep -f sshd > /dev/null; then
+            log_error "SSHD process is not running."
+            exit 1
+        fi
 
-    echo "---> Starting the MUNGE Authentication service (munged) ..."
+    log "Starting the MUNGE Authentication service (munged) ..."
         gosu munge /etc/init.d/munge start
+        if ! pgrep -f munge > /dev/null; then
+            log_error "MUNGE process is not running."
+            exit 1
+        fi
 
-    echo "---> Starting the Slurm Node Daemon (slurmd) ..."
+    log "Starting the Slurm Node Daemon (slurmd) ..."
         exec gosu slurm /usr/sbin/slurmctld -Dvvv
+        if ! pgrep -f sshd > /dev/null; then
+            log_error "SLURMCTLD process is not running."
+            exit 1
+        fi
 
-    bash
+    log "Frontend successfully started"  
+
+    while :; do sleep 2073600 & wait; done
   
   startup-db.sh: |
     #!/usr/bin/env bash
 
-    echo "---> Starting the Secure Shell daemon (sshd)  ..."
+    log() {
+
+        echo "---> $1"
+    }
+
+    log_error() {
+
+        echo "ERROR: $1"
+    }
+
+    log "Starting the Secure Shell daemon (sshd)  ..."
         /usr/sbin/sshd
+        if ! pgrep -f sshd > /dev/null; then
+            log_error "SSHD process is not running."
+            exit 1
+        fi
 
-    echo "---> Starting the MUNGE Authentication service (munged) ..."
+    log "Starting the MUNGE Authentication service (munged) ..."
         gosu munge /etc/init.d/munge start
+        if ! pgrep -f munge > /dev/null; then
+            log_error "MUNGE process is not running."
+            exit 1
+        fi
 
-    echo "---> Starting the mysql-server daemon (mysqld) ..."
+    log "Starting the mysql-server daemon (mysqld) ..."
         mysqld --user=mysql &
 
-    echo -n "Waiting for MySQL to start..."
-        while ! mysqladmin ping -h localhost; do
-            echo -n "."
-            sleep 1
-        done
-    echo "MySQL started successfully!"
+        echo -n "Waiting for MySQL to start..."
+            while ! mysqladmin ping -h localhost; do
+                echo -n "."
+                sleep 1
+            done
 
-    echo "--> Configurating mysql for slurm use ..."
-    mysql -e "create user 'slurm'@'localhost' identified by '${MYSQL_SLURM_PASSWORD}';"
+    log "MySQL started successfully!"
+
+    log "Configurating mysql for slurm use ..."
+    mysql -e "create user 'slurm'@'localhost' identified by 'password';"
     mysql -e "grant all on slurm_acct_db.* TO 'slurm'@'localhost';"
     mysql -e "FLUSH PRIVILEGES;"
     mysql -e "CREATE DATABASE slurm_acct_db;"
 
-    echo "--> Starting the slurm database daemon (slurmdbd) ..."
+    log "Starting the slurm database daemon (slurmdbd) ..."
         gosu slurm slurmdbd -Dvvv
+        if ! pgrep -f slurmdbd > /dev/null; then
+            log_error "SLURMDBD process is not running."
+            exit 1
+        fi
 
-    bash
+    log "DB node successfully started"  
+
+    while :; do sleep 2073600 & wait; done
 
 
   

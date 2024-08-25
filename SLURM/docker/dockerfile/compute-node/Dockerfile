@@ -2,6 +2,9 @@ ARG BASE_IMAGE_TAG=latest
 
 FROM debian-slurm:${BASE_IMAGE_TAG}
 
+ENV SLURMD_HOST=linux-hn
+ENV SLURMDBD_PORT=6817
+
 # Instalamos los paquetes específicos del Head Node
 RUN dpkg -i /tmp/slurm-smd_${SLURMVER}-1_amd64.deb && \
     dpkg -i /tmp/slurm-smd-slurmd_${SLURMVER}-1_amd64.deb && \
