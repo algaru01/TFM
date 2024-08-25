@@ -28,45 +28,6 @@ log_error() {
   echo "ERROR: $1"
 }
 
-# check_env() {
-#   local env_name="$1"
-#   local env_value="${!env_name}"
-
-#   if [ -z $env_value ]; then
-#     log "The $env_name environment variable is unset."
-#     false
-#   else
-#     log "Using environment variable $env_name=$env_value."
-#     true
-#   fi
-# }
-
-# check_shared_directory() {
-#   check_env "SHARED_DIRECTORY"
-
-#   local use_env=$?
-#   if [ $use_env -eq 0 ]; then
-#     log "Writing ${SHARED_DIRECTORY} to /etc/exports file"
-#     echo "${SHARED_DIRECTORY} ${ALLOWED_IP}(rw,sync,fsid=0,no_subtree_check,no_root_squash)" > /etc/exports
-#   else
-#     log "Using default path '/nfs_share'"
-#   fi
-# }
-
-# check_allowed_ip() {
-#   check_env "ALLOWED_IP"
-
-#   local use_env=$?
-#   if [ $use_env -eq 0 ]; then
-#     log "Writing ${SHARED_DIRECTORY} to /etc/exports file"
-#     echo "${SHARED_DIRECTORY} ${ALLOWED_IP}(rw,sync,fsid=0,no_subtree_check,no_root_squash)" > /etc/exports
-#   else
-#     log "Using default path '/nfs_share'"
-#   fi
-# }
-
-# check_shared_directory
-
 
 
 log "Displaying /etc/exports contents"

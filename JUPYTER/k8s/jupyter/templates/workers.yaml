@@ -43,6 +43,11 @@ spec:
         image: agalrui/debian-ipython-wn
         # command: ["ipengine", "--IPEngine.extra_config_file=/home/jupyter/config/ipengine_config.py"]
         # command: ["tail", "-f", "/dev/null"]
+        env:
+        - name: CONFIG_DIR
+          value: /home/jupyter/config
+        - name: IPCONTROLLER_JSON_DIR
+          value: /home/jupyter/jupyter_shared
 
         volumeMounts:
         - name: worker-volumen

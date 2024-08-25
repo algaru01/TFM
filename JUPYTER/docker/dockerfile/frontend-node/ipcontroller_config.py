@@ -1,10 +1,13 @@
+import os
+
+ip_controller_json_dir = os.environ["IPCONTROLLER_JSON_DIR"]
 # Configuration file for ipcontroller.
 
 # c = get_config()
 
 c.IPController.ip = '*'
 
-c.IPController.engine_json_file="/mnt/shared_storage/ipcontroller-engine.json"
+c.IPController.engine_json_file = ip_controller_json_dir+"/ipcontroller-engine.json"
 
 # c.IPController.location="jupyter-cluster-frontend-service.default.svc.cluster.local"
 

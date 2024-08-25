@@ -29,3 +29,6 @@ RUN pip install --break-system-packages -r /tmp/requirements.txt
 RUN useradd -ms /bin/bash jupyter
 RUN mkdir -p /home/jupyter/.ipython/profile_default/security && \
     chown -R jupyter:jupyter /home/jupyter
+
+# Set ENV for shared config files directory
+ENV IPCONTROLLER_JSON_DIR="/mnt/shared_storage"

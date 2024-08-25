@@ -19,7 +19,7 @@ spec:
               done"]
     {{- end }}
 
-    - name: volume-mount-hack
+    - name: change-perm-jupyter
       image: busybox
       command: ["sh", "-c", "chown -R 1000:1000 /home/jupyter/jupyter_shared"]
       volumeMounts:
@@ -49,8 +49,14 @@ spec:
     image: agalrui/debian-ipython-fn
     # command: ["ipcontroller", "--IPController.extra_config_file=/home/jupyter/config/ipcontroller_config.py"]
     # command: ["tail", "-f", "/dev/null"]
+    env:
+      - name: CONFIG_DIR
+        value: /home/jupyter/config
+      - name: IPCONTROLLER_JSON_DIR
+        value: /home/jupyter/jupyter_shared
+
     volumeMounts:
-    - name: frontend-volume
+    - name: ipcontroller-config-volume
       mountPath: /home/jupyter/config
 
     - name: config-users-volume
@@ -91,13 +97,15 @@ spec:
         defaultMode: 0777
         name: {{ .Release.Name }}-users-config
 
-    - name: frontend-volume
+    - name: ipcontroller-config-volume
       configMap:
         defaultMode: 0777
         name: {{ .Release.Name }}-ipythonconf
         items:
           - key: ipcontroller_config.py
             path: ipcontroller_config.py
+          - key: jupyterhub_config.py
+            path: jupyterhub_config.py
 
 ---
 
@@ -120,7 +128,7 @@ spec:
     - name: jupyter
       protocol: TCP
       port: {{ .Values.frontend.jupyterServerPort }}
-      targetPort: 8888
+      targetPort: 8000
 
     {{ range .Values.frontend.IPController.clientPorts }}
     - name: {{ .name }}-client

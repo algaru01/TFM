@@ -5,6 +5,7 @@ metadata:
 data:
   ipcontroller_config.py: |
     # Configuration file for ipcontroller.
+    import os
 
     c = get_config()
 
@@ -24,11 +25,12 @@ data:
 
     c.IPController.ip = '*'
 
-    c.IPController.engine_json_file="/home/jupyter/jupyter_shared/ipcontroller-engine.json"
+    ip_controller_json_dir = os.environ["IPCONTROLLER_JSON_DIR"]
+    c.IPController.engine_json_file=ip_controller_json_dir+"/ipcontroller-engine.json"
 
     c.IPController.location="{{ .Release.Name }}-frontend-service.default.svc.cluster.local"
 
-    c.IPController.client_json_file="/home/jupyter/jupyter_shared/ipcontroller-client.json"
+    c.IPController.client_json_file=ip_controller_json_dir+"/ipcontroller-client.json"
 
     c.IPController.ports=[
     {{- range concat .Values.frontend.IPController.enginePorts .Values.frontend.IPController.clientPorts }}
@@ -37,7 +39,16 @@ data:
     ]
   ipengine_config.py: |
     # Configuration file for ipengine.
+    import os
 
     c = get_config()
 
-    c.IPEngine.url_file="/home/jupyter/jupyter_shared/ipcontroller-engine.json"
+    ip_controller_json_dir = os.environ["IPCONTROLLER_JSON_DIR"]
+    c.IPEngine.url_file=ip_controller_json_dir+"/ipcontroller-engine.json"
+
+  jupyterhub_config.py: |
+    # Configuration file for jupyterhub.
+
+    c = get_config()
+    c.Authenticator.allow_all = True
+    c.Authenticator.allowed_users = { {{- range .Values.users }} '{{ .username }}', {{- end }} }

@@ -29,19 +29,24 @@ services:
   frontend-node:
     image: debian-ipython-fn:latest
     container_name: jupyter-frontend
+    # environment:
+    #   - IPCONTROLLER_JSON_DIR=/mnt/shared
+    # entrypoint: ["bash", "-c", "tail -f /dev/null"]
     networks:
       internal:
         ipv4_address: 172.20.0.2
     volumes:
       - mynfs:/mnt/shared_storage
     ports:
-      - "8888:8888"
+      - "8000:8000"
     depends_on:
       - "nfs-node"
 
   worker-node:
     image: debian-ipython-wn:latest
     container_name: jupyter-worker
+    # environment:
+    #   - IPCONTROLLER_JSON_DIR=/mnt/shared
     networks:
       internal:
         ipv4_address: 172.20.0.3

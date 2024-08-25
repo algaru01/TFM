@@ -5,13 +5,14 @@
 
 FROM debian:latest
 
-ARG SHARED_DIR=/nfs_share
+ENV SHARED_DIR=/nfs_share
 
 # Install packages needed for launching NFS server
 RUN apt-get update && apt-get install -y nfs-kernel-server
 
-# Crear el directorio que se compartirá
+# Crear el directorio que se compartirá y hacerlo propio del usuario jupyter(1000)
 RUN mkdir -p ${SHARED_DIR}
+# RUN chown -R 1000:1000 ${SHARED_DIR}
 
 # Define volume to share
 VOLUME ${SHARED_DIR}
