@@ -52,3 +52,4 @@ data:
     c = get_config()
     c.Authenticator.allow_all = True
     c.Authenticator.allowed_users = { {{- range .Values.users }} '{{ .username }}', {{- end }} }
+    c.ServerApp.iopub_data_rate_limit = 1e10 # Valor por defecto: 10000000. Disminuir este limite para limitar la cantidad de datos que puede manejar el servidor

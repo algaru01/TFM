@@ -147,7 +147,7 @@
           "description": "Number of worker node replicas.",
           "type": "integer",
           "minimum": 1,
-          "maximum": 10
+          "maximum": 256
         }
       }
     },

@@ -51,7 +51,7 @@ frontend:
 
 workers:
   baseHostname: worker
-  numReplicas: 2
+  numReplicas: 10
 
 nfs:
   useLocal: true
