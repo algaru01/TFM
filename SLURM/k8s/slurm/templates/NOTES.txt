@@ -34,7 +34,10 @@ Y de este modo podremos hacer SSH al Service creado:
 >> ssh <usuario>@<service_ip>
 
 {{- if .Values.benchmark }}
-Para hacer el benchmark, entra en el frontend y modifica el /root/hpl/bin/linux/HPL.dot con algo tipo:
+ -----
+| HPL |
+ -----
+Para hacer el benchmark, entra en el frontend y modifica el /root/hpl/bin/linux/HPL.dat con algo tipo:
 
 HPLinpack benchmark input file
 Innovative Computing Laboratory, University of Tennessee

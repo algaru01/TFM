@@ -28,6 +28,14 @@ spec:
           # command: ["tail", "-f", "/dev/null"] 
           command: ["/bin/sh", "/tmp/startup/startup-cn.sh"]
 
+          # resources:
+          #   requests:
+          #     memory: "2Gi" # Memoria/numReplicas
+          #     cpu: "2" # Nucleos/numReplicas
+          #   limits:
+          #     memory: "2Gi"
+          #     cpu: "2"
+
           volumeMounts:
             - name: config-volume
               mountPath: /etc/slurm/
