@@ -1,8 +1,0 @@
-1. Test
-Se ha creado un makefile que hace un testing.
-
-3. Nombres.
-Se ha utilizado el nombre del chart para nombrar a los objetos.
-
-4. Label.
-Se ha añadido unan label `type` para especificar cada pod.
