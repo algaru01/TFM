@@ -45,6 +45,7 @@ data:
 
     ip_controller_json_dir = os.environ["IPCONTROLLER_JSON_DIR"]
     c.IPEngine.url_file=ip_controller_json_dir+"/ipcontroller-engine.json"
+    c.IPEngine.timeout=60
 
   jupyterhub_config.py: |
     # Configuration file for jupyterhub.
@@ -53,3 +54,4 @@ data:
     c.Authenticator.allow_all = True
     c.Authenticator.allowed_users = { {{- range .Values.users }} '{{ .username }}', {{- end }} }
     c.ServerApp.iopub_data_rate_limit = 1e10 # Valor por defecto: 10000000. Disminuir este limite para limitar la cantidad de datos que puede manejar el servidor
+    c.JupyterHub.proxy_check_interval = 20

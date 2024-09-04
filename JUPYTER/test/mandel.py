@@ -55,8 +55,8 @@ def parallel_mandel(width, height, num_tasks):
     return fractal, parallel_time
 
 def main():
-    width = 2000
-    height = 1000
+    width = 12000
+    height = 12000
     num_tasks = 16
 
     # Timing sequential execution

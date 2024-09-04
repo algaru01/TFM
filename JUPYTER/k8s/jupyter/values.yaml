@@ -51,12 +51,12 @@ frontend:
 
 workers:
   baseHostname: worker
-  numReplicas: 10
+  numReplicas: 12
 
 nfs:
   useLocal: true
-  server: #192.168.1.142           # Not needed if useLocal is true
-  basePath: #"/mnt/nfs_tfm/jupyter"  # Not needed if useLocal is true
+  server: 192.168.1.142           # Not needed if useLocal is true
+  basePath: "/mnt/nfs_tfm/jupyter"  # Not needed if useLocal is true
 
 users:
   - username: test

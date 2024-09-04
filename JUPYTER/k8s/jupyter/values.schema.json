@@ -154,28 +154,38 @@
     "nfs": {
       "description": "NFS Volume mounted for shared ipcontroller-engine.json and ipcontroller-client.json",
       "type": "object",
+      "properties": {
+        "useLocal": {
+          "description": "Whether to use local NFS",
+          "type": "boolean"
+        },
+        "server": {
+          "description": "Server where NFS is located.",
+          "type": "string",
+          "default": ""
+        },
+        "basePath": {
+          "description": "Path in the server where shared directory is located.",
+          "type": "string",
+          "default": ""
+        }
+      },
       "oneOf": [
         {
-          "required": ["useLocal"],
+          "description": "Use local NFS",
           "properties": {
-            "useLocal": {
-              "description": "Whether to use local NFS",
-              "type": "boolean"
-            }
-          }
+            "useLocal": { "enum": [true] }
+          },
+          "required": ["useLocal"]
         },
         {
-          "required": ["server", "basePath"],
+          "description": "Use remote NFS",
           "properties": {
-            "server": {
-              "description": "Server where NFS is located.",
-              "type": "string"
-            },
-            "basePath": {
-              "description": "Path in the server where shared directory is located.",
-              "type": "string"
-            }
-          }
+            "useLocal": { "enum": [false] },
+            "server": { "type": "string" },
+            "basePath": { "type": "string" }
+          },
+          "required": ["useLocal", "server", "basePath"]
         }
       ]
     },

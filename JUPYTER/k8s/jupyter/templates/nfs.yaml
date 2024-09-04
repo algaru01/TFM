@@ -22,6 +22,7 @@ spec:
       mkdir /nfs_share/jupyter_shared
       {{- range $index, $user := .Values.users }}
       mkdir /nfs_share/user_home_dir_{{ $index }}
+      chown -R {{ add 1100 $index }}:{{ add 1100 $index }} /nfs_share/user_home_dir_{{ $index }}
       {{- end }}
     volumeMounts:
     - name: shared-vol

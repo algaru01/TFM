@@ -22,7 +22,7 @@ all: build start
 
 
 build:
-	docker build -t ${NFS_IMG}:${NFS_IMG_TAG} 					./dockerfile/nfs &
+	docker build -t ${NFS_IMG}:${NFS_IMG-TAG} 					./dockerfile/nfs &
 
 	docker build -t debian-ipython:latest 				./dockerfile
 	docker build -t ${FRONTEND_IMG}:${FRONTEND_IMG-TAG} ./dockerfile/frontend-node &
@@ -80,5 +80,5 @@ push:
 	docker tag 	${WORKER_IMG}:${WORKER_IMG-TAG}  agalrui/${WORKER_IMG}:${WORKER_IMG-TAG}
 	docker push agalrui/${WORKER_IMG}:${WORKER_IMG-TAG} &
 
-	docker tag 	${NFS_IMG}:${NFS_IMG_TAG}  agalrui/${NFS_IMG}:${NFS_IMG_TAG}
-	docker push agalrui/${NFS_IMG}:${NFS_IMG_TAG} &
+	docker tag 	${NFS_IMG}:${NFS_IMG-TAG}  agalrui/${NFS_IMG}:${NFS_IMG-TAG}
+	docker push agalrui/${NFS_IMG}:${NFS_IMG-TAG} &
