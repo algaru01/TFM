@@ -17,12 +17,6 @@ NFS_CONT_NAME = nfs-server-node
 
 NFS_VOL_NAME = mynfs
 
-#### BENCHMARK ####
-
-
-
-###################
-
 all: build start
 
 build_benchmark:
