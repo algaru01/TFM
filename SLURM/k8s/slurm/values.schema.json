@@ -69,10 +69,13 @@
           "maximum": 49151,
           "default": 6819
         },
-        "mySqlPassword": {
+        "mySqlRootPassword": {
           "description": "Password for the mysql database.",
-          "type": "string",
-          "default": "password"
+          "type": "string"
+        },
+        "mySqlSlurmPassword": {
+          "description": "Password for the mysql database.",
+          "type": "string"
         }
       },
       "if": {
@@ -83,7 +86,7 @@
         }
       },
       "then": {
-        "required": ["hostname", "slurmdbdPort", "mySqlPassword"]
+        "required": ["hostname", "slurmdbdPort", "mySqlSlurmPassword", "mySqlRootPassword"]
       },
       "else": {
         "required": []

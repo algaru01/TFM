@@ -24,22 +24,19 @@ log "Starting the MUNGE Authentication service (munged) ..."
         exit 1
     fi
 
-log "Starting the mysql-server daemon (mysqld) ..."
-    mysqld --user=mysql &
+echo -n "Waiting for MySQL to start..."
+    while ! mysqladmin ping -h ${MYSQL_ADDRESS}; do
+        echo -n "."
+        sleep 1
+    done
 
-    echo -n "Waiting for MySQL to start..."
-        while ! mysqladmin ping -h localhost; do
-            echo -n "."
-            sleep 1
-        done
-
-log "MySQL started successfully!"
+log "MySQL has started!"
 
 log "Configurating mysql for slurm use ..."
-mysql -e "create user 'slurm'@'localhost' identified by 'password';"
-mysql -e "grant all on slurm_acct_db.* TO 'slurm'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
-mysql -e "CREATE DATABASE slurm_acct_db;"
+mysql -h ${MYSQL_ADDRESS} -p${MYSQL_ROOT_PASSWORD} -e "create user 'slurm'@'localhost' identified by '${MYSQL_SLURM_PASSWORD}';"
+mysql -h ${MYSQL_ADDRESS} -p${MYSQL_ROOT_PASSWORD} -e "grant all on slurm_acct_db.* TO 'slurm'@'%';"
+mysql -h ${MYSQL_ADDRESS} -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
+mysql -h ${MYSQL_ADDRESS} -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE slurm_acct_db;"
 
 log "Starting the slurm database daemon (slurmdbd) ..."
     gosu slurm slurmdbd -Dvvv

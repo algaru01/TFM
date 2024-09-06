@@ -23,18 +23,46 @@ spec:
         - name: emptydir-volume
           mountPath: /etc/slurm
   containers:
-    - name: db
+    - name: slurmdbd
       image: agalrui/debian-slurm-db:{{ if .Values.benchmark }}benchmark{{ else }}latest{{ end }}
       # command: ["tail", "-f", "/dev/null"]
       env:
+        - name: MYSQL_ADDRESS
+          value: {{ .Values.db.address }}
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
         - name: MYSQL_SLURM_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-secret
-              key: password
+              key: slurm-password
       volumeMounts:
         - name: emptydir-volume
           mountPath: /etc/slurm/
+
+    - name: mysql
+      image: mysql:5.7
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
+        - name: MYSQL_DATABASE
+          value: slurmdb
+        - name: MYSQL_USER
+          value: slurm
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: slurm-password
+      volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
 
   volumes:
     - name: config-volume
@@ -48,6 +76,9 @@ spec:
           path: slurmdbd.conf
     - name: emptydir-volume
       emptyDir: {}
+    - name: mysql-persistent-storage
+      persistentVolumeClaim:
+        claimName: {{ .Release.Name }}-db-pvc
 
 ---
 
@@ -63,5 +94,35 @@ spec:
     - name: listen
       port: {{ .Values.db.slurmdbdPort }}
       targetPort: {{ .Values.db.slurmdbdPort }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-db-pv
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/slurm-db"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-db-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
 
 {{- end }}

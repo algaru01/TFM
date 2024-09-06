@@ -168,7 +168,8 @@ data:
     DbdPort= {{ .Values.db.slurmdbdPort }}
     StorageType=accounting_storage/mysql
     SlurmUser=slurm
-    StoragePass={{ .Values.db.mySqlPassword }}
+    StorageHost={{ .Values.db.address }}
+    StoragePass={{ .Values.db.mySqlSlurmPassword }}
 {{- end }}
 
   cgroup.conf: |
@@ -191,4 +192,5 @@ metadata:
 type: Opaque
 immutable: true
 data:
-  password: {{ .Values.db.mySqlPassword | b64enc }}
+  slurm-password: {{ .Values.db.mySqlSlurmPassword | b64enc }}
+  root-password: {{ .Values.db.mySqlRootPassword | b64enc }}
